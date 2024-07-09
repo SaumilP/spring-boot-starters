@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "spring.redis",
+      "type": "org.sandcastle.starters.properties.RedisConfigurationProperties",
+      "sourceType": "org.sandcastle.starters.properties.RedisConfigurationProperties"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}
