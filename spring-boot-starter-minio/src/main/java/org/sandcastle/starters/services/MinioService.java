@@ -1,10 +1,18 @@
 package org.sandcastle.starters.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sun.java.accessibility.util.EventID;
 import io.minio.BucketExistsArgs;
+import io.minio.CopyObjectArgs;
+import io.minio.CopySource;
+import io.minio.DisableObjectLegalHoldArgs;
 import io.minio.DownloadObjectArgs;
+import io.minio.EnableObjectLegalHoldArgs;
+import io.minio.GetBucketEncryptionArgs;
 import io.minio.GetObjectArgs;
+import io.minio.GetObjectRetentionArgs;
 import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.IsObjectLegalHoldEnabledArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -12,15 +20,26 @@ import io.minio.PutObjectArgs;
 import io.minio.RemoveBucketArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.RemoveObjectsArgs;
+import io.minio.RestoreObjectArgs;
 import io.minio.Result;
+import io.minio.ServerSideEncryption;
+import io.minio.ServerSideEncryptionCustomerKey;
+import io.minio.ServerSideEncryptionKms;
+import io.minio.SnowballObject;
 import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
 import io.minio.UploadObjectArgs;
+import io.minio.UploadSnowballObjectsArgs;
 import io.minio.http.Method;
 import io.minio.messages.Bucket;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
+import io.minio.messages.RestoreRequest;
+import io.minio.messages.Retention;
+import io.minio.messages.SseAlgorithm;
+import io.minio.messages.SseConfiguration;
+
 import org.sandcastle.starters.exceptions.MinioException;
 import org.sandcastle.starters.exceptions.MinioFetchException;
 import org.sandcastle.starters.properties.MinioConfigurationProperties;
@@ -29,14 +48,21 @@ import org.springframework.util.CollectionUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import javax.crypto.KeyGenerator;
 
 public class MinioService {
     private final MinioClient minioClient;
@@ -111,8 +137,8 @@ public class MinioService {
     public List<String> listFiles() {
         return !CollectionUtils.isEmpty(list())
                 ? list().stream()
-                .map(Item::objectName)
-                .collect(Collectors.toCollection(LinkedList::new))
+                        .map(Item::objectName)
+                        .collect(Collectors.toCollection(LinkedList::new))
                 : new LinkedList<>();
     }
 
@@ -204,6 +230,18 @@ public class MinioService {
         }
     }
 
+    public Retention getObjectRetention(Path path) throws MinioException {
+        try {
+            GetObjectRetentionArgs args = GetObjectRetentionArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(path.toString())
+                    .build();
+            return minioClient.getObjectRetention(args);
+        } catch (Exception e) {
+            throw new MinioException("Error while checking object retention in Minio", e);
+        }
+    }
+
     public Map<Path, StatObjectResponse> getMetadata(Iterable<Path> paths) {
         return StreamSupport.stream(paths.spliterator(), false)
                 .map(path -> {
@@ -233,6 +271,21 @@ public class MinioService {
         }
     }
 
+    public void getAndSave(Path source, String fileName, String algorithm, int keyStrength) throws MinioException {
+        try {
+            var ssec = getServerSideEncryptionKey(algorithm, keyStrength);
+            DownloadObjectArgs args = DownloadObjectArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .filename(fileName)
+                    .ssec(ssec)
+                    .build();
+            minioClient.downloadObject(args);
+        } catch (Exception e) {
+            throw new MinioException("Error while fetching files in Minio", e);
+        }
+    }
+
     public void upload(Path source, InputStream file, Map<String, String> headers) throws MinioException {
         try {
             PutObjectArgs args = PutObjectArgs.builder()
@@ -240,6 +293,26 @@ public class MinioService {
                     .object(source.toString())
                     .stream(file, file.available(), -1)
                     .headers(headers)
+                    .build();
+            minioClient.putObject(args);
+        } catch (Exception e) {
+            throw new MinioException("Error while fetching files in Minio", e);
+        }
+    }
+
+    public void upload(Path source,
+            InputStream file,
+            Map<String, String> headers,
+            String algorithm,
+            int keyStrength) throws MinioException {
+        try {
+            var ssec = getServerSideEncryptionKey(algorithm, keyStrength);
+            PutObjectArgs args = PutObjectArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .stream(file, file.available(), -1)
+                    .headers(headers)
+                    .sse(ssec)
                     .build();
             minioClient.putObject(args);
         } catch (Exception e) {
@@ -260,7 +333,28 @@ public class MinioService {
         }
     }
 
-    public void upload(Path source, InputStream file, String contentType, Map<String, String> headers) throws MinioException {
+    public void upload(Path source,
+            InputStream file,
+            String algorithm,
+            int keyStrength) throws MinioException {
+        try {
+            var ssec = getServerSideEncryptionKey(algorithm, keyStrength);
+            PutObjectArgs args = PutObjectArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .stream(file, file.available(), -1)
+                    .sse(ssec)
+                    .build();
+            minioClient.putObject(args);
+        } catch (Exception e) {
+            throw new MinioException("Error while fetching files in Minio", e);
+        }
+    }
+
+    public void upload(Path source,
+            InputStream file,
+            String contentType,
+            Map<String, String> headers) throws MinioException {
         try {
             PutObjectArgs args = PutObjectArgs.builder()
                     .bucket(clientProps.getBucket())
@@ -268,6 +362,29 @@ public class MinioService {
                     .stream(file, file.available(), -1)
                     .headers(headers)
                     .contentType(contentType)
+                    .build();
+
+            minioClient.putObject(args);
+        } catch (Exception e) {
+            throw new MinioException("Error while fetching files in Minio", e);
+        }
+    }
+
+    public void upload(Path source,
+            InputStream file,
+            String contentType,
+            Map<String, String> headers,
+            String algorithm,
+            int keyStrength) throws MinioException {
+        try {
+            var ssec = getServerSideEncryptionKey(algorithm, keyStrength);
+            PutObjectArgs args = PutObjectArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .stream(file, file.available(), -1)
+                    .headers(headers)
+                    .contentType(contentType)
+                    .sse(ssec)
                     .build();
 
             minioClient.putObject(args);
@@ -301,6 +418,69 @@ public class MinioService {
             minioClient.uploadObject(args);
         } catch (Exception e) {
             throw new MinioException("Error while fetching files in Minio", e);
+        }
+    }
+
+    public void upload(Path source,
+            InputStream file,
+            String contentType,
+            String algorithm,
+            int keyStrength) throws MinioException {
+        try {
+            var ssec = getServerSideEncryptionKey(algorithm, keyStrength);
+            PutObjectArgs args = PutObjectArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .stream(file, file.available(), -1)
+                    .contentType(contentType)
+                    .sse(ssec)
+                    .build();
+
+            minioClient.putObject(args);
+        } catch (Exception e) {
+            throw new MinioException("Error while fetching files in Minio", e);
+        }
+    }
+
+    public void upload(Path source,
+            File file,
+            String algorithm,
+            int keyStrength) throws MinioException {
+        try {
+            var ssec = getServerSideEncryptionKey(algorithm, keyStrength);
+            UploadObjectArgs args = UploadObjectArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .filename(file.getName())
+                    .sse(ssec)
+                    .build();
+            minioClient.uploadObject(args);
+        } catch (Exception e) {
+            throw new MinioException("Error while fetching files in Minio", e);
+        }
+    }
+
+    public void uploadSnowballObjects(SnowballObject... objects) throws MinioException {
+        var objIterables = new Iterable<SnowballObject>() {
+            @Override
+            public Iterator<SnowballObject> iterator() {
+                return Arrays.stream(objects).iterator();
+            }
+        };
+        Iterable<SnowballObject> iterable = () -> objIterables.iterator();
+        if (objects == null
+                || StreamSupport.stream(iterable.spliterator(), false)
+                        .anyMatch(so -> so.name() == null || so.name().isEmpty())) {
+            throw new MinioException("Valid input must be provided");
+        }
+        try {
+            UploadSnowballObjectsArgs args = UploadSnowballObjectsArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .objects(objIterables)
+                    .build();
+            minioClient.uploadSnowballObjects(args);
+        } catch (Exception ex) {
+            throw new MinioException("Error attempting to save snowball objects", ex);
         }
     }
 
@@ -352,10 +532,11 @@ public class MinioService {
         return false;
     }
 
-    public List<String> removeObject(String bucketName, List<String> objectNames) throws Exception {
+    public List<String> removeObjects(String bucketName, List<String> objectNames) throws Exception {
         if (CollectionUtils.isEmpty(objectNames)) {
             throw new MinioException("minio.delete.object.name.can.not.empty");
         }
+
         List<String> deleteErrorNames = new ArrayList<>();
         if (bucketExists(bucketName)) {
             List<DeleteObject> objects = objectNames.stream()
@@ -379,5 +560,125 @@ public class MinioService {
             throw new MinioException("minio.delete.object.name.can.not.empty", e);
         }
         return url.substring(EventID.ACTION, url.indexOf("?"));
+    }
+
+    public Object copy(Path source, Path target, String targetBucketName) throws MinioException {
+        try {
+            var args = CopyObjectArgs.builder()
+                    .bucket(targetBucketName)
+                    .object(target.toString())
+                    .source(
+                            CopySource.builder()
+                                    .bucket(clientProps.getBucket())
+                                    .object(source.toString())
+                                    .build())
+                    .build();
+            return minioClient.copyObject(args);
+        } catch (Exception ex) {
+            throw new MinioException("Error copying the object", ex);
+        }
+    }
+
+    public Object secureCopy(Path source,
+            Path target,
+            String targetBucketName,
+            String algorithm,
+            int keyStrength) throws MinioException {
+        try {
+            var ssec = getServerSideEncryptionKey(algorithm, keyStrength);
+            var args = CopyObjectArgs.builder()
+                    .bucket(targetBucketName)
+                    .object(target.toString())
+                    .source(
+                            CopySource.builder()
+                                    .bucket(clientProps.getBucket())
+                                    .object(source.toString())
+                                    .build())
+                    .sse(ssec)
+                    .build();
+            return minioClient.copyObject(args);
+        } catch (Exception ex) {
+            throw new MinioException("Error copying the object", ex);
+        }
+    }
+
+    public void enableLegalHold(String objVersionId, Path source) throws MinioException {
+        try {
+            var args = EnableObjectLegalHoldArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .versionId(objVersionId)
+                    .build();
+            minioClient.enableObjectLegalHold(args);
+        } catch (Exception ex) {
+            throw new MinioException("Error enabling object legal hold", ex);
+        }
+    }
+
+    public void disableLegalHold(Path source) throws MinioException {
+        try {
+            var args = DisableObjectLegalHoldArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .build();
+            minioClient.disableObjectLegalHold(args);
+        } catch (Exception ex) {
+            throw new MinioException("Error disabling object legal hold", ex);
+        }
+    }
+
+    public boolean isObjectLegalHold(String objVersionId, Path source) throws MinioException {
+        try {
+            var args = IsObjectLegalHoldEnabledArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(source.toString())
+                    .versionId(objVersionId)
+                    .build();
+            return minioClient.isObjectLegalHoldEnabled(args);
+        } catch (Exception ex) {
+            throw new MinioException("Error checking object legal hold", ex);
+        }
+    }
+
+    public void restoreObject(String objVersionId, Path oldSource) throws MinioException {
+        try {
+            var args = RestoreObjectArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .object(oldSource.toString())
+                    .versionId(objVersionId)
+                    .request(new RestoreRequest(null, null, null, objVersionId, null, null))
+                    .build();
+            minioClient.restoreObject(args);
+        } catch (Exception ex) {
+            throw new MinioException("Error checking object legal hold", ex);
+        }
+    }
+
+    public SseAlgorithm getEncryptionConfig() throws MinioException {
+        try {
+            var args = GetBucketEncryptionArgs.builder()
+                    .bucket(clientProps.getBucket())
+                    .build();
+            var sseConfig = minioClient.getBucketEncryption(args);
+            if (sseConfig != null) {
+                return sseConfig.rule().sseAlgorithm();
+            }
+            return null;
+        } catch (Exception ex) {
+            throw new MinioException("Error retrieving bucket CORS config", ex);
+        }
+    }
+
+    private ServerSideEncryptionCustomerKey getServerSideEncryptionKey(String algorithm, int keyStrength)
+            throws GeneralSecurityException {
+        KeyGenerator keyGen = KeyGenerator.getInstance(algorithm);
+        keyGen.init(keyStrength);
+        ServerSideEncryptionCustomerKey ssec = new ServerSideEncryptionCustomerKey(keyGen.generateKey());
+        return ssec;
+    }
+
+    private ServerSideEncryption getKmsEncrytion(Map<String, String> contextMap)
+            throws GeneralSecurityException, JsonProcessingException {
+        return new ServerSideEncryptionKms("Key-Id", contextMap);
     }
 }

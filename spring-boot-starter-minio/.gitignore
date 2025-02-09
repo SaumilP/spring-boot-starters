@@ -30,6 +30,8 @@ target
 target/
 .idea
 .idea/
+bin/
+build/
 
 .profile
 .bash_rc
