@@ -23,6 +23,16 @@ public class MinioConfigurationProperties {
     private Duration expire = Duration.ofSeconds(30);
     private boolean checkBucket = true;
     private boolean createBucket = false;
+    private String region;
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     private int maxConns = 200;
     private long httpKeepAliveDurationMs = Duration.ofMinutes(5).toMillis();
 

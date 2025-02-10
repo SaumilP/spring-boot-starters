@@ -2,7 +2,6 @@ package org.sandcastle.starters.configs;
 
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
-import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import org.sandcastle.starters.exceptions.MinioException;
 import org.sandcastle.starters.properties.MinioConfigurationProperties;
@@ -18,7 +17,6 @@ import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @ConditionalOnClass(MinioClient.class)
@@ -39,20 +37,22 @@ public class MinioAutoConfiguration {
     @Bean
     public MinioClient minioClient() throws Exception {
         MinioConfigurationProperties clientProps = minioConfigurationProperties();
-        MinioClient client;
+
+        var clientBuilder = MinioClient.builder()
+                .endpoint(clientProps.getUrl())
+                .credentials(clientProps.getAccessKey(), clientProps.getSecretKey());
+
         // Enable proxy configurations
-        if (!isProxyConfigured()) {
-            client = MinioClient.builder()
-                    .endpoint(clientProps.getUrl())
-                    .credentials(clientProps.getAccessKey(), clientProps.getSecretKey())
-                    .build();
-        } else {
-            client = MinioClient.builder()
-                    .endpoint(clientProps.getUrl())
-                    .credentials(clientProps.getAccessKey(), clientProps.getSecretKey())
-                    .httpClient(client(clientProps))
-                    .build();
+        if (isProxyConfigured()) {
+            clientBuilder.httpClient(client(clientProps));
         }
+
+        // Setup region if provided
+        if (clientProps.getRegion() != null && !clientProps.getRegion().isEmpty()) {
+            clientBuilder.region(clientProps.getRegion());
+        }
+
+        var client = clientBuilder.build();
         client.setTimeout(
                 clientProps.getConnectTimeout().toMillis(),
                 clientProps.getWriteTimeout().toMillis(),
@@ -62,16 +62,11 @@ public class MinioAutoConfiguration {
         if (clientProps.isCheckBucket()) {
             try {
                 log.debug("Checking if the bucket {} exists", clientProps.getBucket());
-                var existsArgs = BucketExistsArgs.builder()
-                        .bucket(clientProps.getBucket())
-                        .build();
+                var existsArgs = BucketExistsArgs.builder().bucket(clientProps.getBucket()).build();
                 if (!client.bucketExists(existsArgs)) {
                     if (clientProps.isCreateBucket()) {
                         try {
-                            var makeBucketArgs = MakeBucketArgs.builder()
-                                    .bucket(clientProps.getBucket())
-                                    .build();
-                            client.makeBucket(makeBucketArgs);
+                            client.makeBucket(MakeBucketArgs.builder().bucket(clientProps.getBucket()).build());
                         } catch (Exception ex) {
                             throw new MinioException("Cannot create bucket", ex.getCause());
                         }
@@ -100,8 +95,6 @@ public class MinioAutoConfiguration {
         if (StringUtils.hasText(httpHost)) {
             okHttpClient.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpHost, Integer.parseInt(httpPort))));
         }
-        return okHttpClient
-                .retryOnConnectionFailure(false)
-                .build();
+        return okHttpClient.retryOnConnectionFailure(false).build();
     }
 }
