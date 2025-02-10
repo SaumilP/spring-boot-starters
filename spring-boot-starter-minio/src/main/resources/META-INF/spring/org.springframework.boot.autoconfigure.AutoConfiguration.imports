@@ -1,0 +1,2 @@
+org.sandcastle.starters.configs.MinioAutoConfiguration,
+org.sandcastle.starters.configs.MinioMetricsConfiguration

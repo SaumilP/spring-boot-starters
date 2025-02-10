@@ -20,7 +20,6 @@ import javax.crypto.KeyGenerator;
 import org.sandcastle.starters.exceptions.MinioException;
 import org.sandcastle.starters.exceptions.MinioFetchException;
 import org.sandcastle.starters.properties.MinioConfigurationProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

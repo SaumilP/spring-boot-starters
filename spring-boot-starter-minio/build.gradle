@@ -2,15 +2,19 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.1' apply false
     id 'io.spring.dependency-management' version '1.1.5'
+    id 'com.diffplug.spotless' version '7.0.2'
 }
 
 group = 'org.sandcastle.starter-apps'
-version = '1.0.0-SNAPSHOT'
+version = '1.1.0'
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 configurations {
@@ -28,19 +32,46 @@ dependencyManagement {
 }
 
 dependencies {
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-starter'
-    compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
     provided 'org.springframework:spring-aop'
     provided 'io.micrometer:micrometer-core'
     compileOnly 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.springframework.boot:spring-boot-starter-aop'
-    implementation ('io.minio:minio:8.4.6') {
+    implementation ('io.minio:minio:8.5.17') {
         exclude group: 'com.google.guava', module: 'guava'
     }
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.slf4j:slf4j-api:2.0.6'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+  options.compilerArgs += ['-Xlint:deprecation']
+  dependsOn 'spotlessApply'
+}
+
+spotless {
+  format 'misc', {
+    // define the files to apply `misc` to
+    target '*.gradle', '*.md', '.gitignore'
+
+    // define the steps to apply to those files
+    trimTrailingWhitespace()
+    leadingTabsToSpaces()
+    endWithNewline()
+  }
+
+  java {
+
+    // define the steps to apply to those files
+    trimTrailingWhitespace()
+    leadingTabsToSpaces()
+    endWithNewline()
+    removeUnusedImports()
+  }
 }
 
 tasks.named('test') {
