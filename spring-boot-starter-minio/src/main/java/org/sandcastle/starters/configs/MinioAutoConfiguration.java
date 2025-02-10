@@ -2,10 +2,12 @@ package org.sandcastle.starters.configs;
 
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
+import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import org.sandcastle.starters.exceptions.MinioException;
 import org.sandcastle.starters.properties.MinioConfigurationProperties;
-import org.sandcastle.starters.services.MinioService;
+import org.sandcastle.starters.services.MinioStorageServiceImpl;
+import org.sandcastle.starters.services.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @ConditionalOnClass(MinioClient.class)
@@ -29,8 +32,8 @@ public class MinioAutoConfiguration {
     }
 
     @Bean
-    public MinioService minioService(MinioClient minioClient, MinioConfigurationProperties minioConfigurationProperties){
-        return new MinioService(minioClient, minioConfigurationProperties);
+    public StorageService minioService(MinioClient minioClient, MinioConfigurationProperties configProps) {
+        return new MinioStorageServiceImpl(minioClient, configProps);
     }
 
     @Bean
@@ -47,38 +50,36 @@ public class MinioAutoConfiguration {
             client = MinioClient.builder()
                     .endpoint(clientProps.getUrl())
                     .credentials(clientProps.getAccessKey(), clientProps.getSecretKey())
-                    .httpClient(client())
+                    .httpClient(client(clientProps))
                     .build();
         }
         client.setTimeout(
                 clientProps.getConnectTimeout().toMillis(),
                 clientProps.getWriteTimeout().toMillis(),
-                clientProps.getReadTimeout().toMillis()
-        );
+                clientProps.getReadTimeout().toMillis());
 
         // check configured bucket
         if (clientProps.isCheckBucket()) {
             try {
                 log.debug("Checking if the bucket {} exists", clientProps.getBucket());
-                BucketExistsArgs existsArgs = BucketExistsArgs.builder()
+                var existsArgs = BucketExistsArgs.builder()
                         .bucket(clientProps.getBucket())
                         .build();
-                boolean doesBucketExist = client.bucketExists(existsArgs);
-                if (!doesBucketExist) {
+                if (!client.bucketExists(existsArgs)) {
                     if (clientProps.isCreateBucket()) {
                         try {
-                            MakeBucketArgs makeBucketArgs = MakeBucketArgs.builder()
+                            var makeBucketArgs = MakeBucketArgs.builder()
                                     .bucket(clientProps.getBucket())
                                     .build();
                             client.makeBucket(makeBucketArgs);
-                        } catch (Exception ex){
+                        } catch (Exception ex) {
                             throw new MinioException("Cannot create bucket", ex.getCause());
                         }
                     } else {
                         throw new IllegalStateException("Bucket does not exist:" + clientProps.getBucket());
                     }
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 log.error("Error while checking bucket", ex);
                 throw ex;
             }
@@ -87,18 +88,20 @@ public class MinioAutoConfiguration {
     }
 
     private boolean isProxyConfigured() {
-        String httpHost = System.getProperty("http.proxyHost");
-        String httpPort = System.getProperty("http.proxyPort");
+        var httpHost = System.getProperty("http.proxyHost");
+        var httpPort = System.getProperty("http.proxyPort");
         return StringUtils.hasText(httpHost) && StringUtils.hasText(httpPort);
     }
 
-    private OkHttpClient client() {
-        String httpHost = System.getProperty("http.proxyHost");
-        String httpPort = System.getProperty("http.proxyPort");
-        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
+    private OkHttpClient client(MinioConfigurationProperties props) {
+        var httpHost = System.getProperty("http.proxyHost");
+        var httpPort = System.getProperty("http.proxyPort");
+        var okHttpClient = new OkHttpClient.Builder();
         if (StringUtils.hasText(httpHost)) {
-            httpClientBuilder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpHost, Integer.parseInt(httpPort))));
+            okHttpClient.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpHost, Integer.parseInt(httpPort))));
         }
-        return httpClientBuilder.build();
+        return okHttpClient
+                .retryOnConnectionFailure(false)
+                .build();
     }
 }

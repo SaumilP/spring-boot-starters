@@ -13,6 +13,10 @@ java {
     }
 }
 
+configurations {
+    provided
+}
+
 repositories {
     mavenCentral()
 }
@@ -25,6 +29,11 @@ dependencyManagement {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+    provided 'org.springframework:spring-aop'
+    provided 'io.micrometer:micrometer-core'
+    compileOnly 'org.springframework.boot:spring-boot-starter-actuator'
+    compileOnly 'org.springframework.boot:spring-boot-starter-aop'
     implementation ('io.minio:minio:8.4.6') {
         exclude group: 'com.google.guava', module: 'guava'
     }

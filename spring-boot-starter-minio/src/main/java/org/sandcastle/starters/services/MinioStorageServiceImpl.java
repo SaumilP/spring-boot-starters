@@ -1,7 +1,31 @@
 package org.sandcastle.starters.services;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.crypto.KeyGenerator;
+
+import org.sandcastle.starters.exceptions.MinioException;
+import org.sandcastle.starters.exceptions.MinioFetchException;
+import org.sandcastle.starters.properties.MinioConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sun.java.accessibility.util.EventID;
+
 import io.minio.BucketExistsArgs;
 import io.minio.CopyObjectArgs;
 import io.minio.CopySource;
@@ -38,55 +62,35 @@ import io.minio.messages.Item;
 import io.minio.messages.RestoreRequest;
 import io.minio.messages.Retention;
 import io.minio.messages.SseAlgorithm;
-import io.minio.messages.SseConfiguration;
 
-import org.sandcastle.starters.exceptions.MinioException;
-import org.sandcastle.starters.exceptions.MinioFetchException;
-import org.sandcastle.starters.properties.MinioConfigurationProperties;
-import org.springframework.util.CollectionUtils;
+public class MinioStorageServiceImpl implements StorageService {
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import javax.crypto.KeyGenerator;
-
-public class MinioService {
     private final MinioClient minioClient;
     private final MinioConfigurationProperties clientProps;
 
-    public MinioService(MinioClient minioClient, MinioConfigurationProperties clientProps) {
+    public MinioStorageServiceImpl(MinioClient minioClient, MinioConfigurationProperties clientProps) {
         this.minioClient = minioClient;
         this.clientProps = clientProps;
     }
 
+    @Override
     public boolean bucketExists(String bucketName) throws Exception {
         return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
     }
 
+    @Override
     public void createBucket(String bucketName) throws Exception {
         if (!bucketExists(bucketName)) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
         }
     }
 
+    @Override
     public List<Bucket> listBuckets() throws Exception {
         return minioClient.listBuckets();
     }
 
+    @Override
     public List<String> litBucketNames() throws Exception {
         List<Bucket> buckets = listBuckets();
         return !CollectionUtils.isEmpty(buckets)
@@ -94,6 +98,7 @@ public class MinioService {
                 : new ArrayList<>();
     }
 
+    @Override
     public boolean removeBucket(String bucketName) throws Exception {
         boolean flag = bucketExists(bucketName);
         if (flag) {
@@ -113,6 +118,7 @@ public class MinioService {
         return false;
     }
 
+    @Override
     public List<String> listObjectNames(String bucketName) throws Exception {
         List<String> listObjectNames = new ArrayList<>();
         boolean flag = bucketExists(bucketName);
@@ -126,6 +132,7 @@ public class MinioService {
         return listObjectNames;
     }
 
+    @Override
     public Iterable<Result<Item>> listObjects(String bucketName) throws Exception {
         boolean flag = bucketExists(bucketName);
         if (flag) {
@@ -134,6 +141,7 @@ public class MinioService {
         return null;
     }
 
+    @Override
     public List<String> listFiles() {
         return !CollectionUtils.isEmpty(list())
                 ? list().stream()
@@ -142,6 +150,7 @@ public class MinioService {
                 : new LinkedList<>();
     }
 
+    @Override
     public List<Item> list() {
         ListObjectsArgs args = ListObjectsArgs.builder()
                 .bucket(clientProps.getBucket())
@@ -152,6 +161,7 @@ public class MinioService {
         return getItems(myObjects);
     }
 
+    @Override
     public String getUrl(String path) throws MinioException {
         GetPresignedObjectUrlArgs getPresignedObjectUrlArgs = GetPresignedObjectUrlArgs.builder()
                 .bucket(clientProps.getBucket())
@@ -166,6 +176,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public List<Item> fullList() {
         ListObjectsArgs args = ListObjectsArgs.builder()
                 .bucket(clientProps.getBucket())
@@ -174,6 +185,7 @@ public class MinioService {
         return getItems(myObjects);
     }
 
+    @Override
     public List<Item> list(Path path) {
         ListObjectsArgs args = ListObjectsArgs.builder()
                 .bucket(clientProps.getBucket())
@@ -184,6 +196,7 @@ public class MinioService {
         return getItems(myObjects);
     }
 
+    @Override
     public List<Item> getFullList(Path path) {
         ListObjectsArgs args = ListObjectsArgs.builder()
                 .bucket(clientProps.getBucket())
@@ -206,6 +219,7 @@ public class MinioService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public InputStream get(Path path) throws MinioException {
         try {
             GetObjectArgs args = GetObjectArgs.builder()
@@ -218,6 +232,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public StatObjectResponse getMetadata(Path path) throws MinioException {
         try {
             StatObjectArgs args = StatObjectArgs.builder()
@@ -230,6 +245,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public Retention getObjectRetention(Path path) throws MinioException {
         try {
             GetObjectRetentionArgs args = GetObjectRetentionArgs.builder()
@@ -242,6 +258,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public Map<Path, StatObjectResponse> getMetadata(Iterable<Path> paths) {
         return StreamSupport.stream(paths.spliterator(), false)
                 .map(path -> {
@@ -258,6 +275,7 @@ public class MinioService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    @Override
     public void getAndSave(Path source, String fileName) throws MinioException {
         try {
             DownloadObjectArgs args = DownloadObjectArgs.builder()
@@ -271,6 +289,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void getAndSave(Path source, String fileName, String algorithm, int keyStrength) throws MinioException {
         try {
             var ssec = getServerSideEncryptionKey(algorithm, keyStrength);
@@ -286,6 +305,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source, InputStream file, Map<String, String> headers) throws MinioException {
         try {
             PutObjectArgs args = PutObjectArgs.builder()
@@ -300,6 +320,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source,
             InputStream file,
             Map<String, String> headers,
@@ -320,6 +341,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source, InputStream file) throws MinioException {
         try {
             PutObjectArgs args = PutObjectArgs.builder()
@@ -333,6 +355,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source,
             InputStream file,
             String algorithm,
@@ -351,6 +374,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source,
             InputStream file,
             String contentType,
@@ -370,6 +394,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source,
             InputStream file,
             String contentType,
@@ -393,6 +418,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source, InputStream file, String contentType) throws MinioException {
         try {
             PutObjectArgs args = PutObjectArgs.builder()
@@ -408,6 +434,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source, File file) throws MinioException {
         try {
             UploadObjectArgs args = UploadObjectArgs.builder()
@@ -421,6 +448,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source,
             InputStream file,
             String contentType,
@@ -442,6 +470,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void upload(Path source,
             File file,
             String algorithm,
@@ -460,6 +489,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void uploadSnowballObjects(SnowballObject... objects) throws MinioException {
         var objIterables = new Iterable<SnowballObject>() {
             @Override
@@ -484,6 +514,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public String getResignedObjectUrl(String bucketName, String objectName) throws Exception {
         GetPresignedObjectUrlArgs args = GetPresignedObjectUrlArgs.builder()
                 .bucket(bucketName)
@@ -492,6 +523,7 @@ public class MinioService {
         return minioClient.getPresignedObjectUrl(args);
     }
 
+    @Override
     public void remove(Path source) throws MinioException {
         try {
             RemoveObjectArgs args = RemoveObjectArgs.builder()
@@ -504,6 +536,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public String upload(InputStream file, Path source, String contentType) throws MinioException {
         String fileUrl;
         try {
@@ -522,6 +555,7 @@ public class MinioService {
         return fileUrl;
     }
 
+    @Override
     public boolean removeObject(String bucketName, String objectName) throws Exception {
         if (bucketExists(bucketName)) {
             minioClient.removeObject(RemoveObjectArgs.builder()
@@ -532,6 +566,7 @@ public class MinioService {
         return false;
     }
 
+    @Override
     public List<String> removeObjects(String bucketName, List<String> objectNames) throws Exception {
         if (CollectionUtils.isEmpty(objectNames)) {
             throw new MinioException("minio.delete.object.name.can.not.empty");
@@ -552,6 +587,7 @@ public class MinioService {
         return deleteErrorNames;
     }
 
+    @Override
     public String interceptUrl(InputStream file, Path source, String contentType) throws MinioException {
         String url;
         try {
@@ -562,6 +598,7 @@ public class MinioService {
         return url.substring(EventID.ACTION, url.indexOf("?"));
     }
 
+    @Override
     public Object copy(Path source, Path target, String targetBucketName) throws MinioException {
         try {
             var args = CopyObjectArgs.builder()
@@ -579,6 +616,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public Object secureCopy(Path source,
             Path target,
             String targetBucketName,
@@ -602,6 +640,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void enableLegalHold(String objVersionId, Path source) throws MinioException {
         try {
             var args = EnableObjectLegalHoldArgs.builder()
@@ -615,6 +654,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void disableLegalHold(Path source) throws MinioException {
         try {
             var args = DisableObjectLegalHoldArgs.builder()
@@ -627,6 +667,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public boolean isObjectLegalHold(String objVersionId, Path source) throws MinioException {
         try {
             var args = IsObjectLegalHoldEnabledArgs.builder()
@@ -640,6 +681,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public void restoreObject(String objVersionId, Path oldSource) throws MinioException {
         try {
             var args = RestoreObjectArgs.builder()
@@ -654,6 +696,7 @@ public class MinioService {
         }
     }
 
+    @Override
     public SseAlgorithm getEncryptionConfig() throws MinioException {
         try {
             var args = GetBucketEncryptionArgs.builder()

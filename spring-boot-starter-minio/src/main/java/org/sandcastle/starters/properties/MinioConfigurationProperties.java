@@ -23,6 +23,16 @@ public class MinioConfigurationProperties {
     private Duration expire = Duration.ofSeconds(30);
     private boolean checkBucket = true;
     private boolean createBucket = false;
+    private int maxConns = 200;
+    private long httpKeepAliveDurationMs = Duration.ofMinutes(5).toMillis();
+
+    public long getHttpKeepAliveDurationMs() {
+        return httpKeepAliveDurationMs;
+    }
+
+    public void setHttpKeepAliveDurationMs(long httpKeepAliveDurationMs) {
+        this.httpKeepAliveDurationMs = httpKeepAliveDurationMs;
+    }
 
     public String getUrl() {
         return url;
@@ -120,6 +130,14 @@ public class MinioConfigurationProperties {
         this.createBucket = createBucket;
     }
 
+    public int getMaxConns() {
+        return maxConns;
+    }
+
+    public void setMaxConns(int maxConns) {
+        this.maxConns = maxConns;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", MinioConfigurationProperties.class.getSimpleName() + "[", "]")
@@ -135,6 +153,7 @@ public class MinioConfigurationProperties {
                 .add("expire=" + expire)
                 .add("checkBucket=" + checkBucket)
                 .add("createBucket=" + createBucket)
+                .add("maxConns=" + maxConns)
                 .toString();
     }
 }
