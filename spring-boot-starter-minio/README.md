@@ -105,8 +105,8 @@ Bug reports and pull requests are welcome :)
 To build and test, you can run:
 
 ```sh
-$ cd orika-spring-boot-starter
-$ ./mvnw clean install
+$ cd spring-boot-starter-minio
+$ ./gradlew assemble
 ```
 
 ## License
