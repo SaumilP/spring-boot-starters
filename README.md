@@ -58,7 +58,7 @@ Each starter:
 
 ---
 
-🚀 Usage Example
+## 🚀 Usage Example
 
 ```gradle
 dependencies {
@@ -77,7 +77,7 @@ With zero configuration, the application starts with:
 
 ---
 
-🧭 Design Principles
+## 🧭 Design Principles
 
 - Convention over configuration
 - Opinionated defaults with escape hatches
@@ -88,7 +88,7 @@ With zero configuration, the application starts with:
 
 ---
 
-🧪 Testing Strategy
+## 🧪 Testing Strategy
 
 - Auto-configuration tests using `@SpringBootTest`
 - Conditional wiring tests per starter
@@ -99,7 +99,7 @@ Each starter is tested in isolation.
 
 ---
 
-📈 Versioning & Compatibility
+## 📈 Versioning & Compatibility
 
 - Semantic versioning
 - Backward-compatible changes within a major version
@@ -110,7 +110,7 @@ This is essential for platform trust.
 
 ---
 
-🤝 When to Use (and Not Use) Custom Starters
+## 🤝 When to Use (and Not Use) Custom Starters
 
 **Use starters when**:
 
@@ -126,7 +126,7 @@ This is essential for platform trust.
 
 ---
 
-🛣 Roadmap
+## 🛣 Roadmap
 
 - [ ] Add reference demo application
 - [ ] Expand observability integrations
@@ -142,6 +142,6 @@ Upcoming starters:
 
 ---
 
-📄 License
+## 📄 License
 
 MIT License — free to use, extend, and adapt.
