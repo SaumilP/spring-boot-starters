@@ -3,5 +3,13 @@ rootProject.name = 'spring-boot-starters'
 include(
     'spring-boot-starter-common',
     'spring-boot-starter-minio',
-    'spring-boot-starter-redis'
+    'spring-boot-starter-redis',
+    'spring-boot-starter-rate-limiting',
+    'spring-boot-starter-idempotency',
+    'spring-boot-starter-audit-log',
+    'spring-boot-starter-feature-flags',
+    'spring-boot-starter-llm-client',
+    'spring-boot-starter-multitenancy',
+    'spring-boot-starter-aws-s3',
+    'spring-boot-starter-outbox'
 )
