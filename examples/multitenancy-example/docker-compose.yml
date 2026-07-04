@@ -1,0 +1,3 @@
+version: '3.8'
+# No external infrastructure required — tenant resolution is header-based only.
+services: {}

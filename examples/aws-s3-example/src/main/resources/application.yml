@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: aws-s3-example
+  aws:
+    s3:
+      region: us-east-1
+      access-key: test
+      secret-key: test
+      endpoint-override: http://localhost:4566
+      path-style-access: true
+      default-bucket: example-bucket
+      presigned-url-expiry-minutes: 15
+
+server:
+  port: 8080

@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: outbox-example
+  datasource:
+    url: jdbc:postgresql://localhost:5432/outbox_example
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  outbox:
+    broker: kafka
+    kafka-topic-prefix: example.
+    relay-interval-ms: 5000
+    max-retries: 3
+
+server:
+  port: 8080
