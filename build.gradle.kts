@@ -1,10 +1,7 @@
 plugins {
-    id("java-library")                                       apply false
-    id("org.springframework.boot")  version "4.0.4"         apply false
-    id("io.spring.dependency-management") version "1.1.7"   apply false
-    id("com.diffplug.spotless")     version "7.0.3"         apply false
-    id("maven-publish")                                      apply false
-    id("signing")                                            apply false
+    id("org.springframework.boot")       version "4.0.4" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
+    id("com.diffplug.spotless")          version "7.0.3" apply false
 }
 
 group = "io.github.saumilp.starters"
