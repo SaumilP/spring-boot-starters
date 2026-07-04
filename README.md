@@ -1,147 +1,114 @@
-# Spring Boot Starters — Opinionated, Production-Ready Autoconfiguration
+# Spring Boot Starters
 
-A curated set of **custom Spring Boot starters** designed to **accelerate service scaffolding**, **enforce consistent defaults**, and **reduce configuration drift** across Spring-based applications.
+A collection of production-ready Spring Boot auto-configuration libraries that help you
+integrate common infrastructure quickly, consistently, and with zero boilerplate.
 
-This project demonstrates how teams can extend Spring Boot itself—using **auto-configuration, conditional wiring, and sensible defaults**—to build internal platforms that scale.
-
----
-
-## 🎯 Why Custom Starters?
-
-As Spring-based systems grow, teams commonly face:
-- duplicated configuration across services
-- inconsistent logging, security, and observability
-- boilerplate setup that slows down new services
-- configuration drift between environments
-
-**Custom Spring Boot starters solve these problems** by packaging reusable infrastructure concerns into **drop-in dependencies**.
-
-> Add a dependency. Get a working, production-ready setup—by default.
+[![CI](https://github.com/saumilpatel/spring-boot-starters/actions/workflows/ci.yml/badge.svg)](https://github.com/saumilpatel/spring-boot-starters/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/org.sandcastle.starter-apps/spring-boot-starter-redis.svg)](https://central.sonatype.com/search?q=org.sandcastle.starter-apps)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot 4.x](https://img.shields.io/badge/Spring%20Boot-4.x-green.svg)](https://spring.io/projects/spring-boot)
 
 ---
 
-## 🧠 What This Repository Demonstrates
+## Why custom starters?
 
-This project focuses on **how to design and build starters correctly**, not just that they exist.
-
-It demonstrates:
-- Spring Boot auto-configuration patterns
-- Conditional bean registration
-- Externalized configuration with safe defaults
-- Extension points for application-level overrides
-- Versioning and backward compatibility considerations
-
-This is **platform and framework engineering**, not application code.
+As Spring-based systems grow, teams commonly face duplicated configuration across services,
+inconsistent observability, and boilerplate setup that slows down every new project.
+Custom Spring Boot starters solve this by packaging reusable infrastructure concerns into
+drop-in dependencies. Add a dependency. Get a working, production-ready setup — by default.
 
 ---
 
-## 🧩 How Starters Work (Conceptual Overview)
+## Available Starters
 
-```text
-Application
-   |
-   |-- spring-boot-starter-logging
-   |-- spring-boot-starter-security
-   |-- spring-boot-starter-observability
-           |
-           +-- AutoConfiguration classes
-           +-- Conditional beans (@ConditionalOnClass, @ConditionalOnProperty)
-           +-- Opinionated defaults
-           +-- Optional overrides via application.yml
-```
-
-Each starter:
-
-- activates automatically when present on the classpath
-- configures infrastructure components safely
-- avoids interfering when the application provides its own beans
+| Starter | Description | Version |
+|---|---|---|
+| [spring-boot-starter-common](spring-boot-starter-common/README.md) | Shared exceptions, metrics constants, health builder | 1.0.0 |
+| [spring-boot-starter-redis](spring-boot-starter-redis/README.md) | Redis utilities, distributed locking, health + Micrometer metrics | 1.0.0 |
+| [spring-boot-starter-minio](spring-boot-starter-minio/README.md) | MinIO / S3-compatible object storage with health + Micrometer metrics | 2.0.0 |
 
 ---
 
-## 🚀 Usage Example
+## Quick Start
 
-```gradle
+```groovy
+// Gradle
 dependencies {
-    implementation("org.sandcastle.apps.platform:spring-boot-starter-logging")
-    implementation("org.sandcastle.apps.platform:spring-boot-starter-observability")
+    implementation 'org.sandcastle.starter-apps:spring-boot-starter-redis:1.0.0'
+    implementation 'org.sandcastle.starter-apps:spring-boot-starter-minio:2.0.0'
 }
 ```
 
-With zero configuration, the application starts with:
-
-- structured logging
-- consistent log formats
-- baseline metrics and tracing
-- safe defaults
-- Optional overrides are applied via `application.yml`.
-
----
-
-## 🧭 Design Principles
-
-- Convention over configuration
-- Opinionated defaults with escape hatches
-- No surprises on the classpath
-- Fail fast when misconfigured
-- Backward compatibility within major versions
-- Starters should reduce cognitive load, not add magic.
+```xml
+<!-- Maven -->
+<dependency>
+    <groupId>org.sandcastle.starter-apps</groupId>
+    <artifactId>spring-boot-starter-redis</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 
 ---
 
-## 🧪 Testing Strategy
+## Requirements
 
-- Auto-configuration tests using `@SpringBootTest`
-- Conditional wiring tests per starter
-- Context-load verification
-- Property override validation
-
-Each starter is tested in isolation.
-
----
-
-## 📈 Versioning & Compatibility
-
-- Semantic versioning
-- Backward-compatible changes within a major version
-- Clear upgrade paths
-- Release notes documenting behavior changes
-
-This is essential for platform trust.
+| Requirement | Version |
+|---|---|
+| Java | 21 LTS or later |
+| Spring Boot | 4.0.4 or later |
+| Spring Framework | 7.x (transitive via Boot) |
 
 ---
 
-## 🤝 When to Use (and Not Use) Custom Starters
+## Design Philosophy
 
-**Use starters when**:
+**Consumer-first.** Every auto-configured bean is annotated `@ConditionalOnMissingBean`.
+Declare your own bean of the same type and the starter's default disappears completely.
 
-- many services share the same infrastructure concerns
-- consistency and governance matter
-- teams want fast, safe service bootstrapping
+**No surprises.** Starters never embed schema management (Flyway/Liquibase). If a starter
+requires a schema, it documents the DDL in its README and lets you run it.
 
-**Avoid starters when**:
+**Observable by default.** Health indicators and Micrometer metrics are included in every
+starter that touches a remote service — conditional on the actuator / micrometer being
+present, so they add zero overhead if you don't use them.
 
-- behavior must vary widely per service
-- configuration is experimental or unstable
-- the abstraction adds more complexity than value
-
----
-
-## 🛣 Roadmap
-
-- [ ] Add reference demo application
-- [ ] Expand observability integrations
-- [ ] Document extension points per starter
-- [ ] Publish first stable release (v1.0.0)
-- [ ] Add compatibility matrix per Spring Boot version
-
-Upcoming starters:
-- **logging-starter**: Demonstrates auto-configuration, conditional beans, and default overrides.
-- **observability-starter**: Strong signal of production readiness and modern platform thinking.
-- **security-starter**: Shows governance, consistency, and risk-aware design.
-- **rest-client-starter**: Illustrates integration standards and client abstraction.
+**Tested against real infrastructure.** All integration tests use Testcontainers. If a
+test passes locally it will pass in CI.
 
 ---
 
-## 📄 License
+## Project Structure
 
-MIT License — free to use, extend, and adapt.
+```
+spring-boot-starters/
+├── build.gradle                    ← root build: BOM, plugins, publishing, signing
+├── settings.gradle                 ← multi-module root
+├── spring-boot-starter-common/     ← shared abstractions (no auto-config)
+├── spring-boot-starter-minio/      ← MinIO / S3 object storage
+├── spring-boot-starter-redis/      ← Redis utilities and distributed locking
+└── examples/                       ← runnable example applications (not published)
+```
+
+---
+
+## Building Locally
+
+```bash
+./gradlew build                      # compile, test (unit only), javadoc
+./gradlew test -Dgroups=integration  # integration tests (requires Docker)
+./gradlew spotlessApply              # auto-format code
+```
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for coding standards, commit conventions,
+JavaDoc requirements, and how to submit a new starter.
+
+---
+
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE) for details.
