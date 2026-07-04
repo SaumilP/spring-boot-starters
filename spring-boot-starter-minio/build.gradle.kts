@@ -1,20 +1,17 @@
 plugins {
     id("org.springframework.boot") apply false
-    id("com.diffplug.spotless")    apply false
 }
 
 description = "Spring Boot Starter - MinIO object storage with health indicators and Micrometer metrics"
 version     = "2.0.0"
-
-val provided by configurations.creating
 
 dependencies {
     api(project(":spring-boot-starter-common"))
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-autoconfigure")
-    provided("org.springframework:spring-aop")
-    provided("io.micrometer:micrometer-core")
+    compileOnly("org.springframework:spring-aop")
+    compileOnly("io.micrometer:micrometer-core")
     compileOnly("org.springframework.boot:spring-boot-starter-actuator")
     compileOnly("org.springframework.boot:spring-boot-starter-aop")
     implementation("io.minio:minio:8.5.17") {

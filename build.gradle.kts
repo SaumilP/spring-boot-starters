@@ -1,7 +1,7 @@
 plugins {
-    id("org.springframework.boot")       version "4.0.4" apply false
+    id("org.springframework.boot")        version "4.0.4" apply false
     id("io.spring.dependency-management") version "1.1.7" apply false
-    id("com.diffplug.spotless")          version "7.0.3" apply false
+    id("com.diffplug.spotless")           version "7.0.3" apply false
 }
 
 group = "io.github.saumilp.starters"
@@ -10,7 +10,6 @@ subprojects {
     val isExample = project.path.startsWith(":examples")
 
     apply(plugin = "java-library")
-    apply(plugin = "io.spring.dependency-management")
     apply(plugin = "com.diffplug.spotless")
 
     if (!isExample) {
@@ -32,9 +31,17 @@ subprojects {
         mavenCentral()
     }
 
-    configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
-        imports {
-            mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    // Starters: use Gradle-native BOM platform so version resolution works without
+    // io.spring.dependency-management being applied via subprojects block.
+    // Examples: apply io.spring.dependency-management in their own plugins block,
+    // which auto-imports the Spring Boot BOM when org.springframework.boot is also applied.
+    if (!isExample) {
+        val springBom = platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+        dependencies {
+            "api"(springBom)
+            "annotationProcessor"(springBom)
+            "testImplementation"(springBom)
+            "testRuntimeOnly"(springBom)
         }
     }
 
