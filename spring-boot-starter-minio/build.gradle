@@ -1,37 +1,17 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.3.1' apply false
-    id 'io.spring.dependency-management' version '1.1.5'
-    id 'com.diffplug.spotless' version '7.0.2'
+    id 'org.springframework.boot' apply false
+    id 'com.diffplug.spotless'   apply false
 }
 
-group = 'org.sandcastle.starter-apps'
-version = '1.1.0'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-
-    withJavadocJar()
-    withSourcesJar()
-}
+description = 'Spring Boot Starter - MinIO object storage with health indicators and Micrometer metrics'
+version     = '2.0.0'
 
 configurations {
     provided
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
-    }
-}
-
 dependencies {
+    api project(':spring-boot-starter-common')
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
@@ -39,45 +19,19 @@ dependencies {
     provided 'io.micrometer:micrometer-core'
     compileOnly 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.springframework.boot:spring-boot-starter-aop'
-    implementation ('io.minio:minio:8.5.17') {
+    implementation('io.minio:minio:8.5.17') {
         exclude group: 'com.google.guava', module: 'guava'
     }
-    implementation 'com.google.guava:guava:31.1-jre'
-    implementation 'org.slf4j:slf4j-api:2.0.6'
+    implementation 'com.google.guava:guava:33.2.1-jre'
+    implementation 'org.slf4j:slf4j-api'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:minio'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.withType(JavaCompile).configureEach {
-  options.compilerArgs += ['-Xlint:deprecation']
-  dependsOn 'spotlessApply'
-}
-
-spotless {
-  format 'misc', {
-    // define the files to apply `misc` to
-    target '*.gradle', '*.md', '.gitignore'
-
-    // define the steps to apply to those files
-    trimTrailingWhitespace()
-    leadingTabsToSpaces()
-    endWithNewline()
-  }
-
-  java {
-
-    // define the steps to apply to those files
-    trimTrailingWhitespace()
-    leadingTabsToSpaces()
-    endWithNewline()
-    removeUnusedImports()
-  }
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }
 
 javadoc {
     source = sourceSets.main.allJava
+    options.addStringOption('Xdoclint:all', '-quiet')
 }
