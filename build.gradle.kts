@@ -38,7 +38,8 @@ subprojects {
     if (!isExample) {
         dependencies {
             val springBom = platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
-            "api"(springBom)
+            "implementation"(springBom)
+            "compileOnly"(springBom)
             "annotationProcessor"(springBom)
             "testImplementation"(springBom)
             "testRuntimeOnly"(springBom)
