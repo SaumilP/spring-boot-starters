@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: minio-example
+  minio:
+    url: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket-name: demo-bucket
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB

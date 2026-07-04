@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: audit-log-example
+  audit-log:
+    logging-sink:
+      enabled: true
+    jpa-sink:
+      enabled: false

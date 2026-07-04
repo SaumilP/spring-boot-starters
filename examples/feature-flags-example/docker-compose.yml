@@ -1,0 +1,3 @@
+version: '3.8'
+# No external infrastructure required — the file-based provider reads feature-flags.yml at startup.
+services: {}
