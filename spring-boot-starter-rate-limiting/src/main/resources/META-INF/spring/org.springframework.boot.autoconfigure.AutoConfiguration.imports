@@ -1,1 +1,1 @@
-org.sandcastle.starters.ratelimit.config.RateLimitAutoConfiguration
+io.github.saumilp.starters.ratelimit.config.RateLimitAutoConfiguration

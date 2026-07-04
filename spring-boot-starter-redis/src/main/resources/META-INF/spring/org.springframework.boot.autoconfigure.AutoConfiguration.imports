@@ -1,1 +1,1 @@
-org.sandcastle.starters.configs.RedisAutoConfiguration
+io.github.saumilp.starters.configs.RedisAutoConfiguration

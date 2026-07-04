@@ -1,8 +1,6 @@
 # Contributing to spring-boot-starters
 
-Thank you for your interest in contributing. The goal of this project is to maintain a
-curated set of production-quality Spring Boot starters, and every contribution should
-raise the bar for the whole repo.
+Thank you for your interest in contributing. The goal of this project is to maintain a curated set of production-quality Spring Boot starters, and every contribution should raise the bar for the whole repo.
 
 ---
 
@@ -19,24 +17,18 @@ raise the bar for the whole repo.
 
 ### Java
 
-- **Java 21+** — use records, sealed classes, text blocks, and pattern matching where
-  they improve clarity.
+- **Java 21+** — use records, sealed classes, text blocks, and pattern matching where they improve clarity.
 - **No raw types.** Generic types must be fully specified.
-- **Immutable by default.** Prefer `final` fields and return `Map.copyOf()` / `List.copyOf()`
-  from any method returning a collection.
+- **Immutable by default.** Prefer `final` fields and return `Map.copyOf()` / `List.copyOf()` from any method returning a collection.
 - **Spotless formatting** is enforced in CI. Run `./gradlew spotlessApply` locally.
 
 ### Spring Patterns
 
 - Use `@AutoConfiguration` (not `@Configuration`) as the top-level entry point.
-- Register your auto-configuration class in
-  `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
-- Do **not** use `spring.factories` — it was deprecated in Spring Boot 2.7 and removed
-  in Spring Boot 3+.
-- Annotate every auto-configured bean with `@ConditionalOnMissingBean` unless there is a
-  compelling reason not to.
-- Health indicators and Micrometer metrics must be conditional on the actuator / micrometer
-  being present (use `@ConditionalOnClass`).
+- Register your auto-configuration class in `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
+- Do **not** use `spring.factories` — it was deprecated in Spring Boot 2.7 and removed in Spring Boot 3+.
+- Annotate every auto-configured bean with `@ConditionalOnMissingBean` unless there is a compelling reason not to.
+- Health indicators and Micrometer metrics must be conditional on the actuator / micrometer being present (use `@ConditionalOnClass`).
 
 ### JavaDoc
 
@@ -55,8 +47,7 @@ Every public type and method must have a JavaDoc comment. Format:
  */
 ```
 
-The CI `javadoc` task runs with `-Xdoclint:all`. Any missing or malformed tag causes
-a build failure.
+The CI `javadoc` task runs with `-Xdoclint:all`. Any missing or malformed tag causes a build failure.
 
 ---
 
@@ -66,10 +57,8 @@ a build failure.
 
 - Every public class must have a unit test.
 - Use JUnit 5 and AssertJ.
-- Name tests `should_<behaviour>_when_<condition>`. Example:
-  `should_returnNull_when_keyNotFound`.
-- Mock only external collaborators (Redis connection, HTTP clients). Do not mock your own
-  classes.
+- Name tests `should_<behaviour>_when_<condition>`. Example: `should_returnNull_when_keyNotFound`.
+- Mock only external collaborators (Redis connection, HTTP clients). Do not mock your own classes.
 
 ### Integration Tests
 
@@ -87,20 +76,19 @@ Run integration tests with:
 
 ## Submitting a New Starter
 
-1. Create a new Gradle module under the project root. Follow the naming convention
-   `spring-boot-starter-<feature>`.
-2. Add the module to `settings.gradle`.
-3. Depend on `spring-boot-starter-common`:
+1. Create a new Gradle module under the project root. Follow the naming convention `spring-boot-starter-<feature>`.
+1. Add the module to `settings.gradle`.
+2. Depend on `spring-boot-starter-common`:
    ```groovy
    dependencies {
        api project(':spring-boot-starter-common')
    }
    ```
-4. Write `@AutoConfiguration` and register it in `AutoConfiguration.imports`.
-5. Add a comprehensive README following the template of
+3. Write `@AutoConfiguration` and register it in `AutoConfiguration.imports`.
+4. Add a comprehensive README following the template of
    [spring-boot-starter-redis](spring-boot-starter-redis/README.md).
-6. Add a CHANGELOG entry under `[Unreleased]`.
-7. Open a pull request using the PR template.
+5. Add a CHANGELOG entry under `[Unreleased]`.
+6. Open a pull request using the PR template.
 
 ---
 
@@ -122,14 +110,11 @@ Example:
 ```
 feat(redis): add sliding-window rate-limit Lua script
 
-Implements the RateLimitUtil with a Redis Lua script that atomically
-increments a counter per key within a rolling time window.
+Implements the RateLimitUtil with a Redis Lua script that atomically increments a counter per key within a rolling time window.
 ```
 
 ---
 
 ## Release Process
 
-Releases are automated. Maintainers tag a commit with `v<major>.<minor>.<patch>` and
-push the tag. The `release.yml` workflow publishes to Maven Central and creates a
-GitHub Release automatically.
+Releases are automated. Maintainers tag a commit with `v<major>.<minor>.<patch>` and push the tag. The `release.yml` workflow publishes to Maven Central and creates a GitHub Release automatically.

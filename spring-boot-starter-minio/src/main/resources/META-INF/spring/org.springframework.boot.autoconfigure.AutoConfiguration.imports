@@ -1,2 +1,2 @@
-org.sandcastle.starters.configs.MinioAutoConfiguration,
-org.sandcastle.starters.configs.MinioMetricsConfiguration
+io.github.saumilp.starters.configs.MinioAutoConfiguration,
+io.github.saumilp.starters.configs.MinioMetricsConfiguration

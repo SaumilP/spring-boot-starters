@@ -3,7 +3,7 @@
 A collection of production-ready Spring Boot auto-configuration libraries that help you
 integrate common infrastructure quickly, consistently, and with zero boilerplate.
 
-[![CI](https://github.com/saumilpatel/spring-boot-starters/actions/workflows/ci.yml/badge.svg)](https://github.com/saumilpatel/spring-boot-starters/actions/workflows/ci.yml)
+[![CI](https://github.com/SaumilP/spring-boot-starters/actions/workflows/ci.yml/badge.svg)](https://github.com/SaumilP/spring-boot-starters/actions/workflows/ci.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/org.sandcastle.starter-apps/spring-boot-starter-redis.svg)](https://central.sonatype.com/search?q=org.sandcastle.starter-apps)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)

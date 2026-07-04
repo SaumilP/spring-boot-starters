@@ -48,7 +48,7 @@ and alerts work without modification when you adopt additional starters.
 A fluent, null-safe builder for the `details` map passed to Spring Actuator's `Health` object:
 
 ```java
-import org.sandcastle.starters.common.health.HealthDetails;
+import io.github.saumilp.starters.common.health.HealthDetails;
 import org.springframework.boot.actuate.health.Health;
 
 Health health = Health.up()

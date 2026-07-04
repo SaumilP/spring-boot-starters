@@ -1,8 +1,6 @@
 # spring-boot-starter-rate-limiting
 
-Plug-and-play annotation-driven rate limiting for Spring Boot applications. Protect any method or
-controller endpoint with a single `@RateLimit` annotation — the starter handles sliding-window
-counting, Redis-backed distributed enforcement, and HTTP 429 response formatting automatically.
+Plug-and-play annotation-driven rate limiting for Spring Boot applications. Protect any method or controller endpoint with a single `@RateLimit` annotation — the starter handles sliding-window counting, Redis-backed distributed enforcement, and HTTP 429 response formatting automatically.
 
 ---
 
@@ -50,8 +48,7 @@ dependencies {
 </dependency>
 ```
 
-No additional configuration is required for basic use. If Redis is configured in your application,
-the starter automatically uses it for distributed rate limiting.
+No additional configuration is required for basic use. If Redis is configured in your application, the starter automatically uses it for distributed rate limiting.
 
 ---
 
@@ -102,8 +99,7 @@ spring:
 
 ### Method-level annotation
 
-Apply `@RateLimit` directly on a controller method. The default key is composed of the caller's
-remote IP address and the fully-qualified method name.
+Apply `@RateLimit` directly on a controller method. The default key is composed of the caller's remote IP address and the fully-qualified method name.
 
 ```java
 @RestController
@@ -144,8 +140,7 @@ public class InternalController {
 
 ### Named limits (centralised configuration)
 
-Reference a named limit defined in `application.yml` to avoid scattering numeric values across
-annotations. Named limits override the annotation's `requests` and `per` values.
+Reference a named limit defined in `application.yml` to avoid scattering numeric values across annotations. Named limits override the annotation's `requests` and `per` values.
 
 ```java
 @RateLimit(name = "login")
@@ -163,8 +158,7 @@ public ResponseEntity<byte[]> exportReport(@RequestBody ReportRequest request) {
 
 ### Custom key expression
 
-Provide a literal key string to override automatic key resolution. The key is appended to the
-configured `spring.rate-limit.key-prefix`.
+Provide a literal key string to override automatic key resolution. The key is appended to the configured `spring.rate-limit.key-prefix`.
 
 ```java
 // Rate-limit per user ID extracted from the request header
@@ -204,8 +198,7 @@ Content-Type: application/json
 
 ### Custom exception handling
 
-To override the default 429 response format, declare your own `@ControllerAdvice` that handles
-`RateLimitExceededException`:
+To override the default 429 response format, declare your own `@ControllerAdvice` that handles `RateLimitExceededException`:
 
 ```java
 @RestControllerAdvice
@@ -241,10 +234,7 @@ public RateLimiter myCustomRateLimiter() {
 | `RedisTokenBucketRateLimiter` | `spring-boot-starter-data-redis` on classpath | Yes          |
 | `InMemorySlidingWindowRateLimiter` | Fallback when Redis is absent          | No (JVM-local) |
 
-The Redis implementation uses an atomic Lua script (sorted-set sliding window) to prevent
-race conditions under concurrent requests from multiple application instances. On Redis failure,
-the limiter fails open — requests are allowed through — to prevent outages from cascading into
-application downtime.
+The Redis implementation uses an atomic Lua script (sorted-set sliding window) to prevent race conditions under concurrent requests from multiple application instances. On Redis failure, the limiter fails open — requests are allowed through — to prevent outages from cascading into application downtime.
 
 ---
 
@@ -258,5 +248,4 @@ application downtime.
 
 ## Contributing
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines on code style, JavaDoc requirements,
-test conventions, and how to add a new starter to this mono-repo.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines on code style, JavaDoc requirements, test conventions, and how to add a new starter to this mono-repo.

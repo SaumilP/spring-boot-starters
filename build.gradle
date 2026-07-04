@@ -7,7 +7,7 @@ plugins {
     id 'signing'                                            apply false
 }
 
-group = 'org.sandcastle.starter-apps'
+group = 'io.github.saumilp.starters'
 
 subprojects {
     boolean isExample = project.path.startsWith(':examples')
@@ -62,7 +62,7 @@ subprojects {
                 mavenJava(MavenPublication) {
                     from components.java
                     pom {
-                        url = 'https://github.com/saumilpatel/spring-boot-starters'
+                        url = 'https://github.com/SaumilP/spring-boot-starters'
                         licenses {
                             license {
                                 name = 'Apache License, Version 2.0'
@@ -71,15 +71,15 @@ subprojects {
                         }
                         developers {
                             developer {
-                                id    = 'sandcastle'
-                                name  = 'Saumil Patel'
-                                email = 'pate.saumil@gmail.com'
+                                id    = 'SaumilP'
+                                name  = 'SaumilP'
+                                email = 'email2saumil2024@gmail.com'
                             }
                         }
                         scm {
-                            connection          = 'scm:git:git://github.com/saumilpatel/spring-boot-starters.git'
-                            developerConnection = 'scm:git:ssh://github.com/saumilpatel/spring-boot-starters.git'
-                            url                 = 'https://github.com/saumilpatel/spring-boot-starters'
+                            connection          = 'scm:git:git://github.com/SaumilP/spring-boot-starters.git'
+                            developerConnection = 'scm:git:ssh://github.com/SaumilP/spring-boot-starters.git'
+                            url                 = 'https://github.com/SaumilP/spring-boot-starters'
                         }
                     }
                 }
