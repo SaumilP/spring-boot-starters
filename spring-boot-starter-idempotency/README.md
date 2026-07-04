@@ -1,9 +1,6 @@
 # spring-boot-starter-idempotency
 
-A production-ready Spring Boot starter that transparently enforces HTTP idempotency for
-mutating endpoints using the `Idempotency-Key` request header and a Redis-backed response
-cache — preventing duplicate charges, duplicate records, and duplicate side-effects without
-any changes to your controllers.
+A production-ready Spring Boot starter that transparently enforces HTTP idempotency for mutating endpoints using the `Idempotency-Key` request header and a Redis-backed response cache — preventing duplicate charges, duplicate records, and duplicate side-effects without any changes to your controllers.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.saumilp.starters/spring-boot-starter-idempotency.svg)](https://central.sonatype.com/search?q=io.github.saumilp.starters)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -14,14 +11,9 @@ any changes to your controllers.
 
 ## The Problem
 
-In distributed systems, network failures cause clients to retry requests — but without
-server-side de-duplication, a retried `POST /orders` creates two orders, and a retried
-`POST /payments` charges a customer twice. RFC 8725 describes `Idempotency-Key` as the
-standard solution: the client generates a unique key per logical operation and sends it
-with every retry. The server uses the key to detect and replay the original response.
+In distributed systems, network failures cause clients to retry requests — but without server-side de-duplication, a retried `POST /orders` creates two orders, and a retried `POST /payments` charges a customer twice. RFC 8725 describes `Idempotency-Key` as the standard solution: the client generates a unique key per logical operation and sends it with every retry. The server uses the key to detect and replay the original response.
 
-This starter implements the full server-side mechanism — locking, caching, concurrent-request
-handling — as a Servlet filter, so your controllers remain pure and unchanged.
+This starter implements the full server-side mechanism — locking, caching, concurrent-request handling — as a Servlet filter, so your controllers remain pure and unchanged.
 
 ---
 
@@ -105,9 +97,7 @@ spring:
 
 ### Sending an idempotent request
 
-Include the `Idempotency-Key` header with a UUID v4 generated client-side. On retry,
-send the **same key** — the server will replay the original response without re-executing
-the handler.
+Include the `Idempotency-Key` header with a UUID v4 generated client-side. On retry, send the **same key** — the server will replay the original response without re-executing the handler.
 
 **curl:**
 ```bash
@@ -155,8 +145,7 @@ X-Idempotency-Replayed: true
 
 ### Concurrent duplicate — 409 Conflict
 
-If two requests arrive simultaneously with the same key and neither is yet cached, the
-second request receives:
+If two requests arrive simultaneously with the same key and neither is yet cached, the second request receives:
 
 ```http
 HTTP/1.1 409 Conflict
@@ -169,8 +158,7 @@ Content-Type: application/json
 }
 ```
 
-The client should retry after a short delay. Once the first request completes, the next
-attempt with the same key will receive the cached response.
+The client should retry after a short delay. Once the first request completes, the next attempt with the same key will receive the cached response.
 
 ---
 
@@ -179,19 +167,18 @@ attempt with the same key will receive the cached response.
 ```
 Client                  Filter                      Redis         Handler
   │                       │                            │               │
-  │──POST /orders ──────►│                            │               │
+  │──POST /orders ─────-─►│                            │               │
   │  Idempotency-Key: K   │                            │               │
   │                       │──GET idm:K ───────────────►│               │
-  │                       │◄── (nil) ─────────────────│               │
+  │                       │◄── (nil) ─────────────-────│               │
   │                       │──SET NX idm:K:lock ───────►│               │
   │                       │◄── OK (lock acquired) ─────│               │
-  │                       │──────────────────────────────────────────►│
-  │                       │◄─────────────────────────── 201 Created ──│
+  │                       │───────────────────────-───────────────────►│
+  │                       │◄───────────────────────-──── 201 Created ──│
   │                       │──SET NX idm:K (ttl=24h) ──►│               │
-  │                       │──DEL idm:K:lock ───────────►│               │
+  │                       │──DEL idm:K:lock ──────────►│               │
   │◄──201 Created ────────│                            │               │
-
-  │──POST /orders ──────►│  (retry with same key)     │               │
+  │──POST /orders ────-──►│  (retry with same key)     │               │
   │  Idempotency-Key: K   │──GET idm:K ───────────────►│               │
   │                       │◄── {"orderId":"ord-789"} ──│               │
   │◄──201 + Replayed ─────│                            │               │
@@ -221,8 +208,7 @@ public class MyIdempotencyConfig {
 }
 ```
 
-The starter's `@ConditionalOnMissingBean(IdempotencyStore.class)` ensures the auto-configured
-Redis store is skipped when your bean is present.
+The starter's `@ConditionalOnMissingBean(IdempotencyStore.class)` ensures the auto-configured Redis store is skipped when your bean is present.
 
 ### Disabling for specific paths
 
@@ -252,8 +238,7 @@ public FilterRegistrationBean<IdempotencyFilter> idempotencyFilter(
 
 ## Contributing
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for coding standards, Javadoc requirements, and
-the new-starter checklist.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for coding standards, Javadoc requirements, and the new-starter checklist.
 
 ---
 

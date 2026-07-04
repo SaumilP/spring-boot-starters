@@ -1,8 +1,6 @@
 # spring-boot-starter-feature-flags
 
-A Spring Boot auto-configuration starter that integrates the [OpenFeature](https://openfeature.dev/) SDK
-for vendor-neutral feature flag evaluation. Control feature rollout, run A/B experiments, and gate
-new functionality at runtime — without coupling your code to any specific flag-management backend.
+A Spring Boot auto-configuration starter that integrates the [OpenFeature](https://openfeature.dev/) SDK for vendor-neutral feature flag evaluation. Control feature rollout, run A/B experiments, and gate new functionality at runtime — without coupling your code to any specific flag-management backend.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.saumilp.starters/spring-boot-starter-feature-flags.svg)](https://central.sonatype.com/search?q=io.github.saumilp.starters)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -12,11 +10,7 @@ new functionality at runtime — without coupling your code to any specific flag
 
 ## Why OpenFeature?
 
-Most feature-flag libraries lock you into a proprietary SDK. If you later switch from LaunchDarkly
-to Unleash, or from Unleash to a homegrown system, you have to rewrite all flag-evaluation call
-sites. OpenFeature solves this with a vendor-neutral client API backed by swappable **providers**.
-This starter wires up the client, registers a provider, and exposes an `@FeatureEnabled` annotation
-so you never call the OpenFeature SDK directly.
+Most feature-flag libraries lock you into a proprietary SDK. If you later switch from LaunchDarkly to Unleash, or from Unleash to a homegrown system, you have to rewrite all flag-evaluation call sites. OpenFeature solves this with a vendor-neutral client API backed by swappable **providers**. This starter wires up the client, registers a provider, and exposes an `@FeatureEnabled` annotation so you never call the OpenFeature SDK directly.
 
 ---
 
@@ -25,10 +19,8 @@ so you never call the OpenFeature SDK directly.
 - **`@FeatureEnabled`** annotation for method-level flag gating with zero boilerplate
 - **File-based provider** — evaluate flags from a plain YAML file; great for local development and CI
 - **Hard-gate mode** (`disableWhenOff = true`) — throws `FeatureDisabledException` when a flag is off
-- **Advisory mode** (default) — lets the method proceed even when the flag is off; useful for
-  gradual rollout tracking without blocking traffic
-- **OpenFeature vendor-neutral** — swap the provider (Unleash, LaunchDarkly, Flagsmith, etc.)
-  by declaring a single bean
+- **Advisory mode** (default) — lets the method proceed even when the flag is off; useful for gradual rollout tracking without blocking traffic
+- **OpenFeature vendor-neutral** — swap the provider (Unleash, LaunchDarkly, Flagsmith, etc.) by declaring a single bean
 - **`@ConditionalOnMissingBean`** throughout — every auto-configured bean is overrideable
 
 ---
@@ -178,8 +170,7 @@ Every auto-configured bean uses `@ConditionalOnMissingBean`. Declare your own to
 
 ## Contributing
 
-See the root [CONTRIBUTING.md](../CONTRIBUTING.md) for code standards, Javadoc requirements,
-and the new-starter checklist.
+See the root [CONTRIBUTING.md](../CONTRIBUTING.md) for code standards, Javadoc requirements, and the new-starter checklist.
 
 ---
 

@@ -1,11 +1,9 @@
 # spring-boot-starter-common
 
 Shared abstractions and utilities used by all `spring-boot-starters` in this project.
-This module contains no auto-configuration — it is a pure library dependency that other
-starters pull in via `api project(':spring-boot-starter-common')`.
+This module contains no auto-configuration — it is a pure library dependency that other starters pull in via `api project(':spring-boot-starter-common')`.
 
-Consumer applications that import a starter indirectly get `spring-boot-starter-common`
-types on their compile classpath without declaring the dependency directly.
+Consumer applications that import a starter indirectly get `spring-boot-starter-common` types on their compile classpath without declaring the dependency directly.
 
 ---
 
@@ -19,8 +17,7 @@ RuntimeException
         └── StarterConfigurationException — thrown at startup when configuration is invalid
 ```
 
-`StarterException` accepts a message, a cause, or both. Use it as the base for any
-domain-specific exceptions you add in downstream starters.
+`StarterException` accepts a message, a cause, or both. Use it as the base for any domain-specific exceptions you add in downstream starters.
 
 ### Annotations
 
@@ -40,8 +37,7 @@ Pre-defined Micrometer tag keys and status values shared across all starters:
 | `STATUS_SUCCESS` | `"success"` |
 | `STATUS_ERROR` | `"error"` |
 
-Using these constants keeps metric tag names consistent across all starters so dashboards
-and alerts work without modification when you adopt additional starters.
+Using these constants keeps metric tag names consistent across all starters so dashboards and alerts work without modification when you adopt additional starters.
 
 ### Health Details Builder (`HealthDetails`)
 
@@ -66,8 +62,7 @@ Health health = Health.up()
 
 ## Usage
 
-This module is not published as a standalone dependency for end consumers. It is
-transitively included when you depend on any starter in this project:
+This module is not published as a standalone dependency for end consumers. It is transitively included when you depend on any starter in this project:
 
 ```groovy
 // In your application build.gradle

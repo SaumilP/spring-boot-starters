@@ -1,7 +1,6 @@
 # spring-boot-starter-llm-client
 
-A Spring Boot starter that provides a production-ready, OpenAI-compatible LLM client with
-automatic retry, Micrometer metrics, and zero boilerplate configuration. Works with OpenAI,
+A Spring Boot starter that provides a production-ready, OpenAI-compatible LLM client with automatic retry, Micrometer metrics, and zero boilerplate configuration. Works with OpenAI,
 Azure OpenAI, Ollama, and any endpoint that follows the OpenAI Chat Completions API.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.saumilp.starters/spring-boot-starter-llm-client.svg)](https://central.sonatype.com/search?q=io.github.saumilp.starters)
@@ -13,13 +12,9 @@ Azure OpenAI, Ollama, and any endpoint that follows the OpenAI Chat Completions 
 
 ## Overview
 
-Integrating an LLM into a Spring Boot application typically involves wiring a REST client,
-handling authentication headers, implementing retry logic, and adding observability. This
-starter does all of that for you — just inject `LlmClient` and call `ask()`.
+Integrating an LLM into a Spring Boot application typically involves wiring a REST client, handling authentication headers, implementing retry logic, and adding observability. This starter does all of that for you — just inject `LlmClient` and call `ask()`.
 
-The `LlmClient` interface is provider-agnostic. The bundled `RestClientLlmClient` uses
-Spring 6's `RestClient` and speaks the OpenAI Chat Completions API, which is also implemented
-by Ollama, Azure OpenAI, and many self-hosted models.
+The `LlmClient` interface is provider-agnostic. The bundled `RestClientLlmClient` uses Spring 6's `RestClient` and speaks the OpenAI Chat Completions API, which is also implemented by Ollama, Azure OpenAI, and many self-hosted models.
 
 ---
 
@@ -176,8 +171,7 @@ spring:
 
 ## Metrics
 
-When `spring-boot-starter-actuator` and Micrometer are on the classpath, the starter
-records a `llm.chat.duration` timer for every `chat()` call:
+When `spring-boot-starter-actuator` and Micrometer are on the classpath, the starter records a `llm.chat.duration` timer for every `chat()` call:
 
 | Tag       | Values              |
 |-----------|---------------------|

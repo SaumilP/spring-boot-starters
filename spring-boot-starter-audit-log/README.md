@@ -1,30 +1,20 @@
 # spring-boot-starter-audit-log
 
-Annotation-driven audit logging for Spring Boot applications. Add `@Audited` to any
-Spring-managed method and every invocation — successful or failed — is captured as a
-structured event and routed to one or more configurable sinks: a structured SLF4J log,
-a relational database via JPA, or your own custom sink.
+Annotation-driven audit logging for Spring Boot applications. Add `@Audited` to any Spring-managed method and every invocation — successful or failed — is captured as a structured event and routed to one or more configurable sinks: a structured SLF4J log, a relational database via JPA, or your own custom sink.
 
-Audit logs are a compliance requirement in most regulated industries (PCI DSS, HIPAA,
-SOC 2) and an invaluable debugging tool when tracing who did what and when. This starter
-takes care of the cross-cutting plumbing so your application code stays clean.
+Audit logs are a compliance requirement in most regulated industries (PCI DSS, HIPAA, SOC 2) and an invaluable debugging tool when tracing who did what and when. This starter takes care of the cross-cutting plumbing so your application code stays clean.
 
 ---
 
 ## Features
 
 - `@Audited` annotation — place on any Spring bean method; no interface or base class required
-- **Pluggable sinks** — SLF4J logging (default) and JPA persistence (opt-in); combine them via
-  the built-in `CompositeAuditEventSink`
-- **Spring Security integration** — automatically resolves the authenticated principal as the
-  actor; falls back to `"anonymous"` when Security is absent
-- **Custom actor resolution** — replace `ActorResolver` with your own bean (JWT claim,
-  tenant ID, API key, etc.)
-- **Failure events captured** — exceptions do not suppress audit records; outcome is
-  `FAILURE` and the exception message is included
+- **Pluggable sinks** — SLF4J logging (default) and JPA persistence (opt-in); combine them via the built-in `CompositeAuditEventSink`
+- **Spring Security integration** — automatically resolves the authenticated principal as the actor; falls back to `"anonymous"` when Security is absent
+- **Custom actor resolution** — replace `ActorResolver` with your own bean (JWT claim, tenant ID, API key, etc.)
+- **Failure events captured** — exceptions do not suppress audit records; outcome is `FAILURE` and the exception message is included
 - **Duration tracking** — every event includes the method execution time in milliseconds
-- **Resource ID extraction** — use `resourceIdExpression` to record the affected entity ID
-  directly from method parameters
+- **Resource ID extraction** — use `resourceIdExpression` to record the affected entity ID directly from method parameters
 - **No Flyway dependency** — the starter never manages schema; DDL is provided for you to run
 - All beans use `@ConditionalOnMissingBean` — every component is replaceable
 
@@ -121,8 +111,7 @@ spring:
 
 ## Database Schema (JPA Sink)
 
-The JPA sink requires the `audit_events` table. Create it with a Flyway migration named
-`V1__create_audit_events.sql` in your application's `db/migration` directory:
+The JPA sink requires the `audit_events` table. Create it with a Flyway migration named `V1__create_audit_events.sql` in your application's `db/migration` directory:
 
 ```sql
 CREATE TABLE audit_events (
@@ -149,9 +138,7 @@ CREATE INDEX idx_audit_events_occurred_at ON audit_events(occurred_at);
 
 ## Custom Actor Resolution
 
-By default the starter reads the current principal from Spring Security's
-`SecurityContextHolder`. To use a different source — a JWT claim, a custom thread-local,
-or an API key header — declare your own `ActorResolver` bean:
+By default the starter reads the current principal from Spring Security's `SecurityContextHolder`. To use a different source — a JWT claim, a custom thread-local, or an API key header — declare your own `ActorResolver` bean:
 
 ```java
 @Component
@@ -165,15 +152,13 @@ public class JwtActorResolver implements ActorResolver {
 }
 ```
 
-Because `ActorResolver` is registered with `@ConditionalOnMissingBean`, your bean
-automatically takes precedence.
+Because `ActorResolver` is registered with `@ConditionalOnMissingBean`, your bean automatically takes precedence.
 
 ---
 
 ## Custom Sinks
 
-Implement `AuditEventSink` and declare it as a Spring bean to add a custom destination
-(Kafka, webhook, cloud audit trail, etc.):
+Implement `AuditEventSink` and declare it as a Spring bean to add a custom destination (Kafka, webhook, cloud audit trail, etc.):
 
 ```java
 @Component
@@ -192,16 +177,13 @@ public class KafkaAuditEventSink implements AuditEventSink {
 }
 ```
 
-All `AuditEventSink` beans in the application context are automatically collected by the
-`CompositeAuditEventSink` and invoked in registration order. A failure in any single sink
-is caught, logged, and swallowed so the remaining sinks still receive the event.
+All `AuditEventSink` beans in the application context are automatically collected by the `CompositeAuditEventSink` and invoked in registration order. A failure in any single sink is caught, logged, and swallowed so the remaining sinks still receive the event.
 
 ---
 
 ## Overriding Beans
 
-Every bean registered by this starter uses `@ConditionalOnMissingBean`. Declare your own
-bean of the same type in your `@Configuration` class to replace any starter-provided component:
+Every bean registered by this starter uses `@ConditionalOnMissingBean`. Declare your own bean of the same type in your `@Configuration` class to replace any starter-provided component:
 
 | Bean type | What it does |
 |---|---|

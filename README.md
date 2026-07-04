@@ -1,7 +1,6 @@
 # Spring Boot Starters
 
-A collection of production-ready Spring Boot auto-configuration libraries that help you
-integrate common infrastructure quickly, consistently, and with zero boilerplate.
+A collection of production-ready Spring Boot auto-configuration libraries that help you integrate common infrastructure quickly, consistently, and with zero boilerplate.
 
 [![CI](https://github.com/SaumilP/spring-boot-starters/actions/workflows/ci.yml/badge.svg)](https://github.com/SaumilP/spring-boot-starters/actions/workflows/ci.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/org.sandcastle.starter-apps/spring-boot-starter-redis.svg)](https://central.sonatype.com/search?q=org.sandcastle.starter-apps)
@@ -13,10 +12,7 @@ integrate common infrastructure quickly, consistently, and with zero boilerplate
 
 ## Why custom starters?
 
-As Spring-based systems grow, teams commonly face duplicated configuration across services,
-inconsistent observability, and boilerplate setup that slows down every new project.
-Custom Spring Boot starters solve this by packaging reusable infrastructure concerns into
-drop-in dependencies. Add a dependency. Get a working, production-ready setup — by default.
+As Spring-based systems grow, teams commonly face duplicated configuration across services, inconsistent observability, and boilerplate setup that slows down every new project. Custom Spring Boot starters solve this by packaging reusable infrastructure concerns into drop-in dependencies. Add a dependency. Get a working, production-ready setup — by default.
 
 ---
 
@@ -70,8 +66,7 @@ Declare your own bean of the same type and the starter's default disappears comp
 requires a schema, it documents the DDL in its README and lets you run it.
 
 **Observable by default.** Health indicators and Micrometer metrics are included in every
-starter that touches a remote service — conditional on the actuator / micrometer being
-present, so they add zero overhead if you don't use them.
+starter that touches a remote service — conditional on the actuator / micrometer being present, so they add zero overhead if you don't use them.
 
 **Tested against real infrastructure.** All integration tests use Testcontainers. If a
 test passes locally it will pass in CI.
@@ -104,8 +99,7 @@ spring-boot-starters/
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for coding standards, commit conventions,
-JavaDoc requirements, and how to submit a new starter.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for coding standards, commit conventions, JavaDoc requirements, and how to submit a new starter.
 
 ---
 

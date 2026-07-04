@@ -1,9 +1,6 @@
 # spring-boot-starter-aws-s3
 
-A production-ready Spring Boot starter for AWS S3 object storage, built on the AWS SDK for Java v2.
-Provides the same `S3StorageService` abstraction as the MinIO starter, so switching between
-cloud and local object storage requires only a dependency swap and configuration change — no
-application code changes.
+A production-ready Spring Boot starter for AWS S3 object storage, built on the AWS SDK for Java v2. Provides the same `S3StorageService` abstraction as the MinIO starter, so switching between cloud and local object storage requires only a dependency swap and configuration change — no application code changes.
 
 ---
 

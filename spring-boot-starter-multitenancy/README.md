@@ -1,8 +1,6 @@
 # spring-boot-starter-multitenancy
 
-Annotation-free, configuration-driven multitenancy for Spring Boot applications. Automatically
-resolves the current tenant from each HTTP request, propagates it via a thread-local context,
-and wires Hibernate to scope all JPA operations to the correct PostgreSQL schema.
+Annotation-free, configuration-driven multitenancy for Spring Boot applications. Automatically resolves the current tenant from each HTTP request, propagates it via a thread-local context, and wires Hibernate to scope all JPA operations to the correct PostgreSQL schema.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.saumilp.starters/spring-boot-starter-multitenancy.svg)](https://central.sonatype.com/search?q=io.github.saumilp.starters)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
