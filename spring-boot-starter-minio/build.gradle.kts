@@ -1,0 +1,35 @@
+plugins {
+    id("org.springframework.boot") apply false
+    id("com.diffplug.spotless")    apply false
+}
+
+description = "Spring Boot Starter - MinIO object storage with health indicators and Micrometer metrics"
+version     = "2.0.0"
+
+val provided by configurations.creating
+
+dependencies {
+    api(project(":spring-boot-starter-common"))
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    provided("org.springframework:spring-aop")
+    provided("io.micrometer:micrometer-core")
+    compileOnly("org.springframework.boot:spring-boot-starter-actuator")
+    compileOnly("org.springframework.boot:spring-boot-starter-aop")
+    implementation("io.minio:minio:8.5.17") {
+        exclude(group = "com.google.guava", module = "guava")
+    }
+    implementation("com.google.guava:guava:33.2.1-jre")
+    implementation("org.slf4j:slf4j-api")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:minio")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.javadoc {
+    source = sourceSets["main"].allJava
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all", "-quiet")
+}

@@ -1,0 +1,14 @@
+plugins {
+    id("org.springframework.boot") apply false
+}
+
+description = "Spring Boot Starters - Shared common abstractions and utilities"
+version     = "1.0.0"
+
+dependencies {
+    compileOnly("org.springframework.boot:spring-boot-starter")
+    compileOnly("org.springframework.boot:spring-boot-starter-actuator")
+    compileOnly("io.micrometer:micrometer-core")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
