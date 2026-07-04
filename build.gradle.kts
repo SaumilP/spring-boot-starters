@@ -36,8 +36,8 @@ subprojects {
     // Examples: apply io.spring.dependency-management in their own plugins block,
     // which auto-imports the Spring Boot BOM when org.springframework.boot is also applied.
     if (!isExample) {
-        val springBom = platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
         dependencies {
+            val springBom = platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
             "api"(springBom)
             "annotationProcessor"(springBom)
             "testImplementation"(springBom)
