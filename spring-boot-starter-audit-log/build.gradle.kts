@@ -10,13 +10,16 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-autoconfigure")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework:spring-aop")
+    implementation("org.aspectj:aspectjweaver")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-starter-security")
     compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
     compileOnly("org.springframework.boot:spring-boot-starter-actuator")
     compileOnly("io.micrometer:micrometer-core")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-aop")
+    testImplementation("org.springframework:spring-aop")
+    testImplementation("org.aspectj:aspectjweaver")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

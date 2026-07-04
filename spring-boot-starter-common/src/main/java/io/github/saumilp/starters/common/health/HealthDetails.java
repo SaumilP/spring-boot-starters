@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Fluent builder for constructing the detail map passed to Spring Boot Actuator
- * {@link org.springframework.boot.actuate.health.Health} instances.
+ * {@link org.springframework.boot.health.contributor.Health} instances.
  *
  * <p>Provides a consistent, null-safe way to build health detail maps across all starter
  * health indicators without scattering {@code Map.of()} calls throughout the codebase.

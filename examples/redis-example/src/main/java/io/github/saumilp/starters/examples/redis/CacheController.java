@@ -46,7 +46,7 @@ public class CacheController {
 
     @DeleteMapping("/{key}")
     public ResponseEntity<Map<String, String>> delete(@PathVariable String key) {
-        redisUtil.delete(key);
+        redisUtil.del(key);
         return ResponseEntity.ok(Map.of("key", key, "status", "deleted"));
     }
 }

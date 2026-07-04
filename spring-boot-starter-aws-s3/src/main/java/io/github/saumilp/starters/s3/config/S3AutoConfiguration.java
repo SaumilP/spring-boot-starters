@@ -6,7 +6,7 @@ package io.github.saumilp.starters.s3.config;
 import io.github.saumilp.starters.s3.health.S3HealthIndicator;
 import io.github.saumilp.starters.s3.service.S3StorageService;
 import io.github.saumilp.starters.s3.service.S3StorageServiceImpl;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

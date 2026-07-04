@@ -10,8 +10,6 @@ import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationUtils;
 import org.springframework.util.Assert;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -415,17 +413,6 @@ public class RedisUtil {
     }
 
     public boolean tryLock(String key, int expireTime) {
-        final JSONObject lock = new JSONObject();
-        try {
-            lock.put("id", key);
-            // startTime
-            lock.put("st", System.currentTimeMillis());
-            // keepSeconds
-            lock.put("ks", expireTime);
-        } catch (JSONException e) {
-            log.error("Redis distributed lock write exception：{}", e.getMessage());
-            return false;
-        }
         return redisLockUtil.tryLock(key, "", expireTime);
     }
 

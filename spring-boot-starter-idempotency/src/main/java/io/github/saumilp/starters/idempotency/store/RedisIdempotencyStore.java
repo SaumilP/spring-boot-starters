@@ -3,9 +3,8 @@
  */
 package io.github.saumilp.starters.idempotency.store;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import io.github.saumilp.starters.idempotency.model.CachedResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +24,8 @@ import java.util.Optional;
  *       {@code SET NX PX} to serialise concurrent requests</li>
  * </ul>
  *
- * <p>Jackson serialises {@link CachedResponse} to JSON. The {@link JavaTimeModule} is
- * registered to handle {@link java.time.Instant} fields correctly.
+ * <p>Jackson serialises {@link CachedResponse} to JSON. Java time types such as
+ * {@link java.time.Instant} are handled natively by Jackson 3.x.
  *
  * @since 1.0.0
  */
@@ -48,7 +47,7 @@ public class RedisIdempotencyStore implements IdempotencyStore {
     public RedisIdempotencyStore(StringRedisTemplate redisTemplate, String keyPrefix) {
         this.redisTemplate = redisTemplate;
         this.keyPrefix     = keyPrefix;
-        this.objectMapper  = new ObjectMapper().registerModule(new JavaTimeModule());
+        this.objectMapper  = new ObjectMapper();
     }
 
     /**
@@ -66,7 +65,7 @@ public class RedisIdempotencyStore implements IdempotencyStore {
                 return Optional.empty();
             }
             return Optional.of(objectMapper.readValue(json, CachedResponse.class));
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             log.warn("Failed to deserialise cached response for key '{}': {}", key, ex.getMessage());
             return Optional.empty();
         }
@@ -83,7 +82,7 @@ public class RedisIdempotencyStore implements IdempotencyStore {
         try {
             String json = objectMapper.writeValueAsString(response);
             redisTemplate.opsForValue().setIfAbsent(prefixed(key), json, ttl);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             log.error("Failed to serialise cached response for key '{}': {}", key, ex.getMessage());
         }
     }

@@ -13,7 +13,7 @@ dependencies {
     compileOnly("org.springframework:spring-aop")
     compileOnly("io.micrometer:micrometer-core")
     compileOnly("org.springframework.boot:spring-boot-starter-actuator")
-    compileOnly("org.springframework.boot:spring-boot-starter-aop")
+    compileOnly("org.aspectj:aspectjweaver")
     implementation("io.minio:minio:8.5.17") {
         exclude(group = "com.google.guava", module = "guava")
     }

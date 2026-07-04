@@ -67,7 +67,7 @@ public class LlmClientAutoConfiguration {
      * <p>The {@link MeterRegistry} is injected optionally — if Micrometer is not present
      * in the application context, metrics are silently skipped.
      *
-     * @param restClient     the LLM-scoped REST client; must not be {@code null}
+     * @param llmRestClient  the LLM-scoped REST client; must not be {@code null}
      * @param props          the starter configuration; must not be {@code null}
      * @param meterRegistry  optional Micrometer registry; {@code null} if absent
      * @return a configured {@link RestClientLlmClient}; never {@code null}

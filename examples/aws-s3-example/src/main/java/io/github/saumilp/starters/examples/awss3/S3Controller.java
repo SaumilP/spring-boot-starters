@@ -3,7 +3,8 @@
  */
 package io.github.saumilp.starters.examples.awss3;
 
-import io.github.saumilp.starters.awss3.service.S3StorageService;
+import io.github.saumilp.starters.s3.service.S3StorageService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -25,9 +26,12 @@ import java.util.Map;
 public class S3Controller {
 
     private final S3StorageService s3;
+    private final String bucket;
 
-    public S3Controller(S3StorageService s3) {
+    public S3Controller(S3StorageService s3,
+                        @Value("${spring.aws.s3.bucket-name:my-bucket}") String bucket) {
         this.s3 = s3;
+        this.bucket = bucket;
     }
 
     @PostMapping("/upload")
@@ -37,14 +41,14 @@ public class S3Controller {
 
         String objectKey = key != null ? key : file.getOriginalFilename();
         try (InputStream in = file.getInputStream()) {
-            s3.upload(objectKey, in, file.getSize(), file.getContentType());
+            s3.upload(bucket, objectKey, in, file.getSize(), file.getContentType());
         }
         return ResponseEntity.ok(Map.of("key", objectKey, "status", "uploaded"));
     }
 
     @GetMapping("/download/{key}")
     public ResponseEntity<byte[]> download(@PathVariable String key) throws IOException {
-        InputStream stream = s3.download(key);
+        InputStream stream = s3.download(bucket, key);
         byte[] bytes = stream.readAllBytes();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + key + "\"")
@@ -54,13 +58,13 @@ public class S3Controller {
 
     @GetMapping("/presign/{key}")
     public ResponseEntity<Map<String, String>> presign(@PathVariable String key) {
-        URI url = s3.presignedGetUrl(key);
-        return ResponseEntity.ok(Map.of("presignedUrl", url.toString(), "key", key));
+        String url = s3.presignedGetUrl(bucket, key, Duration.ofHours(1));
+        return ResponseEntity.ok(Map.of("presignedUrl", url, "key", key));
     }
 
     @DeleteMapping("/{key}")
     public ResponseEntity<Map<String, String>> delete(@PathVariable String key) {
-        s3.delete(key);
+        s3.delete(bucket, key);
         return ResponseEntity.ok(Map.of("key", key, "status", "deleted"));
     }
 }

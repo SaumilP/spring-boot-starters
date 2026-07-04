@@ -22,8 +22,6 @@ import io.github.saumilp.starters.exceptions.MinioFetchException;
 import io.github.saumilp.starters.properties.MinioConfigurationProperties;
 import org.springframework.util.CollectionUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sun.java.accessibility.util.EventID;
 
 import io.minio.BucketExistsArgs;
 import io.minio.CopyObjectArgs;
@@ -594,7 +592,7 @@ public class MinioStorageServiceImpl implements StorageService {
         } catch (MinioException e) {
             throw new MinioException("minio.delete.object.name.can.not.empty", e);
         }
-        return url.substring(EventID.ACTION, url.indexOf("?"));
+        return url.substring(0, url.indexOf("?"));
     }
 
     @Override
@@ -720,7 +718,7 @@ public class MinioStorageServiceImpl implements StorageService {
     }
 
     private ServerSideEncryption getKmsEncrytion(Map<String, String> contextMap)
-            throws GeneralSecurityException, JsonProcessingException {
+            throws Exception {
         return new ServerSideEncryptionKms("Key-Id", contextMap);
     }
 }
