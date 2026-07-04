@@ -12,14 +12,20 @@ import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.sandcastle.starters.health.RedisHealthIndicator;
+import org.sandcastle.starters.metrics.RedisMetricsAspect;
 import org.sandcastle.starters.properties.RedisConfigurationProperties;
 import org.sandcastle.starters.utils.RedisLockUtil;
 import org.sandcastle.starters.utils.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
@@ -184,6 +190,52 @@ public class RedisAutoConfiguration {
     @ConditionalOnMissingBean(RedisLockUtil.class)
     public RedisLockUtil redisLockUtil(RedisTemplate<String, Object> redisTemplate) {
         return new RedisLockUtil(redisTemplate);
+    }
+
+    /**
+     * Registers a {@link RedisHealthIndicator} that issues a {@code PING} to the Redis server
+     * on every actuator health check.
+     *
+     * <p>Only activated when:
+     * <ol>
+     *   <li>The {@code spring-boot-actuator} module is present on the classpath</li>
+     *   <li>No other {@code HealthIndicator} bean named {@code redisCustomHealthIndicator} exists</li>
+     *   <li>{@code management.health.redis-custom.enabled} is {@code true} (default)</li>
+     * </ol>
+     *
+     * @param connectionFactory the Redis connection factory; must not be {@code null}
+     * @return a configured {@link RedisHealthIndicator}; never {@code null}
+     */
+    @Bean("redisCustomHealthIndicator")
+    @ConditionalOnClass(HealthIndicator.class)
+    @ConditionalOnMissingBean(name = "redisCustomHealthIndicator")
+    @ConditionalOnProperty(prefix = "management.health.redis-custom", name = "enabled",
+            havingValue = "true", matchIfMissing = true)
+    public RedisHealthIndicator redisHealthIndicator(RedisConnectionFactory connectionFactory) {
+        return new RedisHealthIndicator(connectionFactory);
+    }
+
+    /**
+     * Registers the {@link RedisMetricsAspect} AOP aspect that records Micrometer
+     * {@link io.micrometer.core.instrument.Timer} timings for every {@link RedisUtil} method call.
+     *
+     * <p>Only activated when a {@link MeterRegistry} bean is present in the application context
+     * (i.e., when {@code micrometer-core} is on the classpath and an actuator metrics endpoint
+     * is configured). The metric name defaults to {@code redis.operations} and can be overridden
+     * via {@code spring.redis.metric-name}.
+     *
+     * @param meterRegistry the Micrometer registry; must not be {@code null}
+     * @param props         the starter configuration properties; must not be {@code null}
+     * @return a configured {@link RedisMetricsAspect} instance; never {@code null}
+     */
+    @Bean
+    @ConditionalOnClass(name = {"io.micrometer.core.instrument.MeterRegistry",
+            "org.aspectj.lang.annotation.Aspect"})
+    @ConditionalOnBean(MeterRegistry.class)
+    @ConditionalOnMissingBean(RedisMetricsAspect.class)
+    public RedisMetricsAspect redisMetricsAspect(MeterRegistry meterRegistry,
+                                                  RedisConfigurationProperties props) {
+        return new RedisMetricsAspect(meterRegistry, props);
     }
 
     /**
