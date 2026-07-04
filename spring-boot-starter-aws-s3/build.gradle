@@ -1,0 +1,25 @@
+plugins {
+    id 'org.springframework.boot' apply false
+}
+
+description = 'Spring Boot Starter - AWS S3 object storage with AWS SDK v2, pre-signed URLs, and health indicator'
+version     = '1.0.0'
+
+dependencies {
+    api project(':spring-boot-starter-common')
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    implementation platform('software.amazon.awssdk:bom:2.26.27')
+    implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:sts'
+    compileOnly 'org.springframework.boot:spring-boot-starter-actuator'
+    compileOnly 'io.micrometer:micrometer-core'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    options.addStringOption('Xdoclint:all', '-quiet')
+}
