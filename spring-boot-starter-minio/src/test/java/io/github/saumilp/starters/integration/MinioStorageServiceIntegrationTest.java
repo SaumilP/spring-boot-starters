@@ -41,7 +41,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MinioStorageServiceIntegrationTest {
 
     private static final String TEST_BUCKET = "integration-test-bucket";
-    private static final String TEST_OBJECT = "test/hello.txt";
+    // A flat key (no '/') so it appears directly in the non-recursive listObjects() result;
+    // a nested key like "test/hello.txt" would be grouped under the "test/" common prefix.
+    private static final String TEST_OBJECT = "hello.txt";
     private static final String MINIO_USER = "minioadmin";
     private static final String MINIO_PASSWORD = "minioadmin";
 
