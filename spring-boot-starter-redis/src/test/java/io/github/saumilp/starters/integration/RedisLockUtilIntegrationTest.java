@@ -53,7 +53,10 @@ class RedisLockUtilIntegrationTest {
 
     @AfterEach
     void cleanUp() {
-        redisLockUtil.releaseLock(LOCK_KEY, "cleanup-id");
+        // Delete the key unconditionally so each test starts from a clean state. Using
+        // releaseLock here would be a no-op whenever the lock is held under a different
+        // requestId (its by-design safety behaviour), leaving state to leak between tests.
+        redisLockUtil.getRedisTemplate().delete(LOCK_KEY);
     }
 
     @Test
