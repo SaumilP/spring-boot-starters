@@ -10,6 +10,7 @@ import io.github.saumilp.starters.services.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import io.minio.MinioClient;
@@ -28,22 +29,13 @@ import java.net.Proxy;
  */
 @Configuration
 @ConditionalOnClass(MinioClient.class)
+@EnableConfigurationProperties(MinioConfigurationProperties.class)
 public class MinioAutoConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(MinioAutoConfiguration.class);
 
     /** Creates the MinIO auto-configuration. */
     public MinioAutoConfiguration() {
-    }
-
-    /**
-     * Provides the MinIO configuration properties bean.
-     *
-     * @return the configuration properties; never {@code null}
-     */
-    @Bean
-    public MinioConfigurationProperties minioConfigurationProperties() {
-        return new MinioConfigurationProperties();
     }
 
     /**
@@ -62,13 +54,12 @@ public class MinioAutoConfiguration {
      * Builds the {@link MinioClient}, applying proxy and region settings and optionally
      * verifying or creating the configured bucket on startup.
      *
+     * @param clientProps the MinIO configuration properties; must not be {@code null}
      * @return a configured MinIO client; never {@code null}
      * @throws Exception if the client cannot be built or the bucket check/creation fails
      */
     @Bean
-    public MinioClient minioClient() throws Exception {
-        MinioConfigurationProperties clientProps = minioConfigurationProperties();
-
+    public MinioClient minioClient(MinioConfigurationProperties clientProps) throws Exception {
         var clientBuilder = MinioClient.builder()
                 .endpoint(clientProps.getUrl())
                 .credentials(clientProps.getAccessKey(), clientProps.getSecretKey());

@@ -1,7 +1,6 @@
 package io.github.saumilp.starters.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.time.Duration;
 import java.util.StringJoiner;
@@ -13,7 +12,6 @@ import java.util.StringJoiner;
  * @since 1.0.0
  */
 @ConfigurationProperties(MinioConfigurationProperties.PREFIX)
-@EnableConfigurationProperties(MinioConfigurationProperties.class)
 public class MinioConfigurationProperties {
 
     /** Configuration property prefix for all MinIO settings. */
