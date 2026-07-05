@@ -1,0 +1,45 @@
+{
+  "groups": [
+    {
+      "name": "spring.rate-limit",
+      "type": "io.github.saumilp.starters.ratelimit.config.RateLimitProperties",
+      "sourceType": "io.github.saumilp.starters.ratelimit.config.RateLimitProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.rate-limit.default-requests",
+      "type": "java.lang.Integer",
+      "description": "Default maximum requests per window when no named limit or annotation override applies.",
+      "sourceType": "io.github.saumilp.starters.ratelimit.config.RateLimitProperties"
+    },
+    {
+      "name": "spring.rate-limit.default-window-seconds",
+      "type": "java.lang.Long",
+      "description": "Default window duration in seconds. Defaults to {@code 60} (one minute).",
+      "sourceType": "io.github.saumilp.starters.ratelimit.config.RateLimitProperties"
+    },
+    {
+      "name": "spring.rate-limit.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether rate limiting is enabled. Defaults to {@code true}.",
+      "sourceType": "io.github.saumilp.starters.ratelimit.config.RateLimitProperties"
+    },
+    {
+      "name": "spring.rate-limit.key-prefix",
+      "type": "java.lang.String",
+      "description": "Redis key namespace prefix prepended to all rate-limit keys. Defaults to {@code \"rl:\"}.",
+      "sourceType": "io.github.saumilp.starters.ratelimit.config.RateLimitProperties"
+    },
+    {
+      "name": "spring.rate-limit.named-limits",
+      "type": "java.util.Map<java.lang.String,io.github.saumilp.starters.ratelimit.config.RateLimitProperties$NamedLimit>",
+      "description": "Named rate-limit configurations. Each entry may be referenced by name via {@link io.github.saumilp.starters.ratelimit.annotation.RateLimit#name()}.",
+      "sourceType": "io.github.saumilp.starters.ratelimit.config.RateLimitProperties"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "groups": [
+    {
+      "name": "spring.llm",
+      "type": "io.github.saumilp.starters.llm.config.LlmClientProperties",
+      "sourceType": "io.github.saumilp.starters.llm.config.LlmClientProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.llm.api-key",
+      "type": "java.lang.String",
+      "description": "API key sent in the {@code Authorization: Bearer} header. When left empty the client sends an empty bearer token; set via the {@code OPENAI_API_KEY} environment variable in production.",
+      "sourceType": "io.github.saumilp.starters.llm.config.LlmClientProperties"
+    },
+    {
+      "name": "spring.llm.base-url",
+      "type": "java.lang.String",
+      "description": "Base URL of the OpenAI-compatible endpoint. Must not include a trailing slash. Defaults to the official OpenAI API endpoint.",
+      "sourceType": "io.github.saumilp.starters.llm.config.LlmClientProperties"
+    },
+    {
+      "name": "spring.llm.connect-timeout-seconds",
+      "type": "java.lang.Integer",
+      "description": "HTTP connection timeout in seconds. Defaults to {@code 10}.",
+      "sourceType": "io.github.saumilp.starters.llm.config.LlmClientProperties"
+    },
+    {
+      "name": "spring.llm.default-model",
+      "type": "java.lang.String",
+      "description": "The model identifier used when the {@link io.github.saumilp.starters.llm.client.LlmClient#ask} convenience method is called, or when a request explicitly specifies {@code \"default\"}. Defaults to {@code \"gpt-4o-mini\"}.",
+      "sourceType": "io.github.saumilp.starters.llm.config.LlmClientProperties"
+    },
+    {
+      "name": "spring.llm.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether the LLM client is enabled. Defaults to {@code true}.",
+      "sourceType": "io.github.saumilp.starters.llm.config.LlmClientProperties"
+    },
+    {
+      "name": "spring.llm.max-retries",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of retry attempts on transient {@code RestClientException} failures. A value of {@code 0} disables retries. Defaults to {@code 3}.",
+      "sourceType": "io.github.saumilp.starters.llm.config.LlmClientProperties"
+    },
+    {
+      "name": "spring.llm.read-timeout-seconds",
+      "type": "java.lang.Integer",
+      "description": "HTTP read timeout in seconds — how long to wait for the LLM to start streaming a response. Defaults to {@code 60} to accommodate slow model inference.",
+      "sourceType": "io.github.saumilp.starters.llm.config.LlmClientProperties"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

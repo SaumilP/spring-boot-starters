@@ -1,0 +1,51 @@
+{
+  "groups": [
+    {
+      "name": "spring.idempotency",
+      "type": "io.github.saumilp.starters.idempotency.config.IdempotencyProperties",
+      "sourceType": "io.github.saumilp.starters.idempotency.config.IdempotencyProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.idempotency.applicable-methods",
+      "type": "java.util.List<java.lang.String>",
+      "description": "HTTP methods for which idempotency is enforced. Requests using other methods pass through without idempotency checks. Defaults to {@code [POST, PATCH]}.",
+      "sourceType": "io.github.saumilp.starters.idempotency.config.IdempotencyProperties"
+    },
+    {
+      "name": "spring.idempotency.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether the idempotency filter is enabled. Defaults to {@code true}.",
+      "sourceType": "io.github.saumilp.starters.idempotency.config.IdempotencyProperties"
+    },
+    {
+      "name": "spring.idempotency.header-name",
+      "type": "java.lang.String",
+      "description": "The HTTP header name carrying the idempotency key. Defaults to {@code Idempotency-Key}.",
+      "sourceType": "io.github.saumilp.starters.idempotency.config.IdempotencyProperties"
+    },
+    {
+      "name": "spring.idempotency.key-prefix",
+      "type": "java.lang.String",
+      "description": "Redis key namespace prefix prepended to all idempotency entries. Defaults to {@code \"idm:\"}.",
+      "sourceType": "io.github.saumilp.starters.idempotency.config.IdempotencyProperties"
+    },
+    {
+      "name": "spring.idempotency.lock-timeout-seconds",
+      "type": "java.lang.Long",
+      "description": "How long (in seconds) to hold the in-progress lock before automatically releasing it. Prevents deadlocks when a request fails before caching its response. Defaults to {@code 30}.",
+      "sourceType": "io.github.saumilp.starters.idempotency.config.IdempotencyProperties"
+    },
+    {
+      "name": "spring.idempotency.ttl-seconds",
+      "type": "java.lang.Long",
+      "description": "How long (in seconds) to retain a cached response. Defaults to {@code 86400} (24 hours).",
+      "sourceType": "io.github.saumilp.starters.idempotency.config.IdempotencyProperties"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

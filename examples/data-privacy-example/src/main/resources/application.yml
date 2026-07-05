@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: data-privacy-example
+  datasource:
+    url: jdbc:h2:mem:dataprivacy;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  data-privacy:
+    encryption:
+      # Demo key only — supply a strong, random secret via an environment variable in production.
+      key: ${FIELD_ENCRYPTION_KEY:demo-only-change-me}
+    masking:
+      enabled: true
+
+server:
+  port: 8080

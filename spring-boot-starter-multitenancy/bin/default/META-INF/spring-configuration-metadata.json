@@ -1,0 +1,51 @@
+{
+  "groups": [
+    {
+      "name": "spring.multitenancy",
+      "type": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties",
+      "sourceType": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.multitenancy.default-tenant",
+      "type": "java.lang.String",
+      "description": "The tenant identifier used as a fallback when no tenant can be resolved and {@link #requireTenant} is {@code false}. Defaults to {@code \"public\"}.",
+      "sourceType": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties"
+    },
+    {
+      "name": "spring.multitenancy.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether multitenancy support is enabled. Defaults to {@code true}.",
+      "sourceType": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties"
+    },
+    {
+      "name": "spring.multitenancy.require-tenant",
+      "type": "java.lang.Boolean",
+      "description": "Whether requests without a resolvable tenant identifier should be rejected with HTTP {@code 400 Bad Request}. Defaults to {@code true}. <p>Set to {@code false} to allow requests without a tenant (e.g., for public endpoints that should fall back to the {@link #defaultTenant}).",
+      "sourceType": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties"
+    },
+    {
+      "name": "spring.multitenancy.resolver-type",
+      "type": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties$ResolverType",
+      "description": "Which built-in {@link io.github.saumilp.starters.multitenancy.resolver.TenantResolver} implementation to register automatically. Defaults to {@link ResolverType#HEADER}.",
+      "sourceType": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties"
+    },
+    {
+      "name": "spring.multitenancy.strategy",
+      "type": "java.lang.String",
+      "description": "The multitenancy isolation strategy. Supported values: <ul> <li>{@code \"schema\"} — each tenant has a dedicated database schema (default)<\/li> <li>{@code \"database\"} — each tenant has a dedicated database (requires a custom {@link io.github.saumilp.starters.multitenancy.hibernate.SchemaMultiTenantConnectionProvider})<\/li> <\/ul>",
+      "sourceType": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties"
+    },
+    {
+      "name": "spring.multitenancy.tenant-header-name",
+      "type": "java.lang.String",
+      "description": "The HTTP header name used by {@link io.github.saumilp.starters.multitenancy.resolver.HeaderTenantResolver} to read the tenant identifier. Defaults to {@code X-Tenant-Id}.",
+      "sourceType": "io.github.saumilp.starters.multitenancy.config.MultitenancyProperties"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

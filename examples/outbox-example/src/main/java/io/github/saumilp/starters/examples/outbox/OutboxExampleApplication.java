@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author SaumilP (email2saumil2024@gmail.com)
+ * @author SaumilP
  */
 @SpringBootApplication
 public class OutboxExampleApplication {

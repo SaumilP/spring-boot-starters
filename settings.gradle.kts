@@ -16,6 +16,16 @@ include(
     "spring-boot-starter-multitenancy",
     "spring-boot-starter-aws-s3",
     "spring-boot-starter-outbox",
+    "spring-boot-starter-observability",
+    "spring-boot-starter-problem-details",
+    "spring-boot-starter-resilient-client",
+    "spring-boot-starter-data-privacy",
+    "spring-boot-starter-scheduler-lock",
+    "spring-boot-starter-secrets",
+    "spring-boot-starter-notifications",
+    "spring-boot-starter-security-jwt",
+    "spring-boot-starter-webhooks",
+    "spring-boot-starter-api-keys",
     "examples:redis-example",
     "examples:minio-example",
     "examples:rate-limiting-example",
@@ -25,5 +35,10 @@ include(
     "examples:llm-client-example",
     "examples:multitenancy-example",
     "examples:aws-s3-example",
-    "examples:outbox-example"
+    "examples:outbox-example",
+    "examples:data-privacy-example",
+    "examples:notifications-example",
+    "examples:security-jwt-example",
+    "examples:webhooks-example",
+    "examples:api-keys-example"
 )

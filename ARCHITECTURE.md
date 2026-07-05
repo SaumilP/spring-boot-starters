@@ -41,9 +41,11 @@ The repository is a single Gradle multi-project build. There is exactly one base
   abstractions (`StarterException`, `HealthDetails` builder, metric name constants) that every
   other module reuses. It is depended on with Gradle `api(project(":spring-boot-starter-common"))`
   so its types are re-exported transitively.
-- The remaining ten starters are peers. They never depend on each other; a starter that needs
+- The remaining starters are peers. They never depend on each other; a starter that needs
   Redis (rate-limiting, idempotency) declares a direct dependency on Spring Data Redis, not on
-  `spring-boot-starter-redis`.
+  `spring-boot-starter-redis`. The provider integration starters planned in the roadmap (Twilio,
+  Resend, OneSignal, Novu) are the one intentional exception: they build on the
+  `spring-boot-starter-notifications` core SPI.
 
 ### Starters at a glance
 
@@ -60,6 +62,16 @@ The repository is a single Gradle multi-project build. There is exactly one base
 | llm-client | `llm.config.LlmClientAutoConfiguration` | `spring.llm` | `RestClient`, retry |
 | multitenancy | `multitenancy.config.MultitenancyAutoConfiguration` | `spring.multitenancy` | Hibernate multi-tenancy |
 | outbox | `outbox.config.OutboxAutoConfiguration` | `spring.outbox` | JPA + Kafka / RabbitMQ relay |
+| observability | `observability.config.ObservabilityAutoConfiguration` | `spring.observability` | Servlet filter, SLF4J MDC, async decorator |
+| problem-details | `problem.config.ProblemDetailsAutoConfiguration` | `spring.problem-details` | `@RestControllerAdvice`, RFC 7807 |
+| resilient-client | `resilientclient.config.ResilientClientAutoConfiguration` | `spring.resilient-client` | `RestClient` + Resilience4j |
+| data-privacy | `dataprivacy.config.DataPrivacyAutoConfiguration` | `spring.data-privacy` | JPA `AttributeConverter`, AES-GCM |
+| scheduler-lock | `schedulerlock.config.SchedulerLockAutoConfiguration` | `spring.scheduler-lock` | AOP, in-memory / Redis lock |
+| secrets | `secrets.config.SecretsAutoConfiguration` | `spring.secrets` | Env / AWS Secrets Manager |
+| notifications | `notifications.config.NotificationsAutoConfiguration` | `spring.notifications` | Composite sender SPI, async dispatch |
+| security-jwt | `securityjwt.config.SecurityJwtAutoConfiguration` | `spring.security-jwt` | Spring Security OAuth2 resource server |
+| webhooks | `webhooks.config.WebhooksAutoConfiguration` | `spring.webhooks` | `RestClient`, HMAC signing, retry |
+| api-keys | `apikeys.config.ApiKeysAutoConfiguration` | `spring.api-keys` | Servlet filter, SHA-256 hashing |
 
 ---
 

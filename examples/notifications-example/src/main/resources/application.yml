@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: notifications-example
+  notifications:
+    default-channel: EMAIL
+    logging-sender:
+      enabled: true
+
+server:
+  port: 8080

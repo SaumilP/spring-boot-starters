@@ -33,6 +33,16 @@ All artifacts are published under the `io.github.saumilp.starters` group. Each s
 | [spring-boot-starter-llm-client](spring-boot-starter-llm-client/README.md) | OpenAI-compatible LLM client with retry, Micrometer metrics, and optional response caching | `spring.llm` | 1.0.0 |
 | [spring-boot-starter-multitenancy](spring-boot-starter-multitenancy/README.md) | Schema-per-tenant and DB-per-tenant multitenancy using Hibernate and tenant context propagation | `spring.multitenancy` | 1.0.0 |
 | [spring-boot-starter-outbox](spring-boot-starter-outbox/README.md) | Transactional Outbox pattern with JPA persistence and a pluggable Kafka / RabbitMQ relay | `spring.outbox` | 1.0.0 |
+| [spring-boot-starter-observability](spring-boot-starter-observability/README.md) | Request correlation IDs, MDC log propagation, and async context propagation | `spring.observability` | 1.0.0 |
+| [spring-boot-starter-problem-details](spring-boot-starter-problem-details/README.md) | Consistent RFC 7807 (`application/problem+json`) error responses with exception mapping | `spring.problem-details` | 1.0.0 |
+| [spring-boot-starter-resilient-client](spring-boot-starter-resilient-client/README.md) | Resilient outbound HTTP client with Resilience4j retry, circuit breaker, and timeouts | `spring.resilient-client` | 1.0.0 |
+| [spring-boot-starter-data-privacy](spring-boot-starter-data-privacy/README.md) | PII value/log masking and JPA field-level AES-GCM encryption | `spring.data-privacy` | 1.0.0 |
+| [spring-boot-starter-scheduler-lock](spring-boot-starter-scheduler-lock/README.md) | Distributed `@Scheduled` lock (in-memory or Redis) so a task runs on one instance only | `spring.scheduler-lock` | 1.0.0 |
+| [spring-boot-starter-secrets](spring-boot-starter-secrets/README.md) | Unified `SecretSource` over the environment and AWS Secrets Manager | `spring.secrets` | 1.0.0 |
+| [spring-boot-starter-notifications](spring-boot-starter-notifications/README.md) | Core notification SPI with pluggable email/SMS/push channels and a composite router | `spring.notifications` | 1.0.0 |
+| [spring-boot-starter-security-jwt](spring-boot-starter-security-jwt/README.md) | Opinionated JWT resource-server `SecurityFilterChain` with secure headers and CORS defaults | `spring.security-jwt` | 1.0.0 |
+| [spring-boot-starter-webhooks](spring-boot-starter-webhooks/README.md) | Outbound webhook delivery with HMAC signing, retry/backoff, and dead-lettering | `spring.webhooks` | 1.0.0 |
+| [spring-boot-starter-api-keys](spring-boot-starter-api-keys/README.md) | Issue / hash / validate / revoke API keys with an `X-Api-Key` enforcement filter | `spring.api-keys` | 1.0.0 |
 
 ---
 
@@ -112,6 +122,16 @@ spring-boot-starters/
 ├── spring-boot-starter-llm-client/        ← OpenAI-compatible LLM client
 ├── spring-boot-starter-multitenancy/      ← Hibernate multitenancy
 ├── spring-boot-starter-outbox/            ← transactional outbox
+├── spring-boot-starter-observability/     ← correlation IDs & MDC propagation
+├── spring-boot-starter-problem-details/   ← RFC 7807 error responses
+├── spring-boot-starter-resilient-client/  ← Resilience4j HTTP client
+├── spring-boot-starter-data-privacy/      ← PII masking & field encryption
+├── spring-boot-starter-scheduler-lock/    ← distributed @Scheduled lock
+├── spring-boot-starter-secrets/           ← unified secret source (env / AWS)
+├── spring-boot-starter-notifications/     ← core notification SPI + composite router
+├── spring-boot-starter-security-jwt/      ← JWT resource server + secure headers/CORS
+├── spring-boot-starter-webhooks/          ← signed outbound webhook delivery
+├── spring-boot-starter-api-keys/          ← API key issue/validate + enforcement filter
 │
 └── examples/                              ← runnable example applications (not published)
     ├── redis-example/
@@ -123,7 +143,12 @@ spring-boot-starters/
     ├── feature-flags-example/
     ├── llm-client-example/
     ├── multitenancy-example/
-    └── outbox-example/
+    ├── outbox-example/
+    ├── data-privacy-example/
+    ├── notifications-example/
+    ├── security-jwt-example/
+    ├── webhooks-example/
+    └── api-keys-example/
 ```
 
 Every starter depends on `spring-boot-starter-common` and follows the same internal layout

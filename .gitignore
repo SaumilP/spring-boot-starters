@@ -2,6 +2,7 @@
 *.class
 build/
 target/
+caches/
 
 # Log file
 *.log
