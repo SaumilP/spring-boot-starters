@@ -22,7 +22,7 @@ dependencies {
     testImplementation("io.micrometer:micrometer-core")
     testImplementation("org.aspectj:aspectjweaver")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

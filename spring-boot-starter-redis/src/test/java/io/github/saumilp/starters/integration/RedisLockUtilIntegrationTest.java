@@ -8,12 +8,13 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import io.github.saumilp.starters.utils.RedisLockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.EnabledIfDockerAvailable;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
@@ -29,7 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Tag("integration")
 @Testcontainers
-@SpringBootTest(classes = {RedisAutoConfiguration.class,
+@EnabledIfDockerAvailable
+@SpringBootTest(classes = {DataRedisAutoConfiguration.class,
         io.github.saumilp.starters.configs.RedisAutoConfiguration.class})
 class RedisLockUtilIntegrationTest {
 

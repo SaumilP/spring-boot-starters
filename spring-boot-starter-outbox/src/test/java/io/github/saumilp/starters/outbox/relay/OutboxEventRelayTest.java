@@ -8,6 +8,7 @@ import io.github.saumilp.starters.outbox.config.OutboxProperties;
 import io.github.saumilp.starters.outbox.model.OutboxEvent;
 import io.github.saumilp.starters.outbox.model.OutboxEventStatus;
 import io.github.saumilp.starters.outbox.repository.OutboxEventRepository;
+import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +50,8 @@ class OutboxEventRelayTest {
 
     private OutboxEvent pendingEvent() {
         OutboxEvent event = new OutboxEvent();
-        event.onCreate();
+        event.setCreatedAt(Instant.now());
+        event.setStatus(OutboxEventStatus.PENDING);
         event.setAggregateType("Order");
         event.setAggregateId("1");
         event.setEventType("ORDER_CREATED");

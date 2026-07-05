@@ -21,8 +21,8 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:minio")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+    testImplementation("org.testcontainers:testcontainers-minio")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

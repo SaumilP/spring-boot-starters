@@ -169,6 +169,16 @@ public class OutboxEvent {
     public Instant getCreatedAt() { return createdAt; }
 
     /**
+     * Sets the instant at which the event was persisted.
+     *
+     * <p>Normally populated automatically by the {@link #onCreate()} JPA lifecycle callback;
+     * exposed as a setter primarily to support constructing fixtures in tests.
+     *
+     * @param createdAt the creation instant
+     */
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    /**
      * Returns the instant at which the event was successfully relayed to the broker.
      *
      * @return the processing instant; {@code null} until processed
