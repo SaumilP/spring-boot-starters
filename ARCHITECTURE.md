@@ -1,9 +1,6 @@
 # Architecture
 
-This document describes how the `spring-boot-starters` mono-repo is structured, how each
-starter is wired into a consuming application, and the cross-cutting conventions that keep
-the eleven starters consistent. For day-to-day build and contribution instructions, see
-[DEVELOPER.md](DEVELOPER.md).
+This document describes how the `spring-boot-starters` mono-repo is structured, how each starter is wired into a consuming application, and the cross-cutting conventions that keep the eleven starters consistent. For day-to-day build and contribution instructions, see [DEVELOPER.md](DEVELOPER.md).
 
 ---
 
@@ -21,31 +18,85 @@ the eleven starters consistent. For day-to-day build and contribution instructio
 
 ## 2. Module topology
 
-The repository is a single Gradle multi-project build. There is exactly one base library
-(`spring-boot-starter-common`); every other starter depends on it and nothing else in the repo.
+The repository is a single Gradle multi-project build. There is exactly one base library (`spring-boot-starter-common`); every other starter depends on it and nothing else in the repo.
 
-```
-                       ┌─────────────────────────────┐
-                       │  spring-boot-starter-common  │   shared: exceptions,
-                       │  (no auto-configuration)     │   HealthDetails builder,
-                       └──────────────┬──────────────┘    metric constants
-                                      │ api dependency
-        ┌───────────────┬────────────┼────────────┬───────────────┐
-        ▼               ▼            ▼            ▼               ▼
-     redis           minio        aws-s3     rate-limiting   idempotency
-        ▼               ▼            ▼            ▼               ▼
-   audit-log      feature-flags  llm-client  multitenancy      outbox
+```mermaid
+graph TD
+    common["<b>spring-boot-starter-common</b><br/>(shared: exceptions, HealthDetails, metrics)"]:::library
+    
+    subgraph P0["P0: Foundation (Observability & Resilience)"]
+        obs["observability"]:::p0
+        prob["problem-details"]:::p0
+        res["resilient-client"]:::p0
+    end
+    
+    subgraph P1["P1: Data & State (Privacy, Scheduling, Secrets)"]
+        dp["data-privacy"]:::p1
+        sl["scheduler-lock"]:::p1
+        sec["secrets"]:::p1
+    end
+    
+    subgraph P2["P2: Integration (Notifications, Auth, Webhooks)"]
+        not["notifications"]:::p2
+        jwt["security-jwt"]:::p2
+        web["webhooks"]:::p2
+    end
+    
+    subgraph P3["P3: API Management"]
+        ak["api-keys"]:::p3
+    end
+    
+    subgraph Storage["Storage & Cache"]
+        redis["redis"]:::storage
+        minio["minio"]:::storage
+        s3["aws-s3"]:::storage
+    end
+    
+    subgraph Messaging["Events & Audit"]
+        outbox["outbox"]:::messaging
+        audit["audit-log"]:::messaging
+        idempotency["idempotency"]:::messaging
+    end
+    
+    subgraph Other["Cross-Cutting"]
+        ratelim["rate-limiting"]:::other
+        feature["feature-flags"]:::other
+        llm["llm-client"]:::other
+        multi["multitenancy"]:::other
+    end
+    
+    common --> P0
+    common --> P1
+    common --> P2
+    common --> P3
+    common --> Storage
+    common --> Messaging
+    common --> Other
+    
+    classDef library fill:#3b82f6,color:#fff,stroke:#1e40af,stroke-width:3px
+    classDef p0 fill:#10b981,color:#fff,stroke:#059669,stroke-width:2px
+    classDef p1 fill:#f59e0b,color:#fff,stroke:#d97706,stroke-width:2px
+    classDef p2 fill:#f97316,color:#fff,stroke:#ea580c,stroke-width:2px
+    classDef p3 fill:#ef4444,color:#fff,stroke:#dc2626,stroke-width:2px
+    classDef storage fill:#8b5cf6,color:#fff,stroke:#6d28d9,stroke-width:2px
+    classDef messaging fill:#06b6d4,color:#fff,stroke:#0891b2,stroke-width:2px
+    classDef other fill:#6b7280,color:#fff,stroke:#4b5563,stroke-width:2px
 ```
 
-- **`spring-boot-starter-common`** contains no `@AutoConfiguration`. It holds only shared
+**Design principles:**
+
+- **`spring-boot-starter-common`** (blue) contains no `@AutoConfiguration`. It holds only shared
   abstractions (`StarterException`, `HealthDetails` builder, metric name constants) that every
   other module reuses. It is depended on with Gradle `api(project(":spring-boot-starter-common"))`
   so its types are re-exported transitively.
-- The remaining starters are peers. They never depend on each other; a starter that needs
+
+- **All other starters are peers** — they never depend on each other. A starter that needs
   Redis (rate-limiting, idempotency) declares a direct dependency on Spring Data Redis, not on
-  `spring-boot-starter-redis`. The provider integration starters planned in the roadmap (Twilio,
-  Resend, OneSignal, Novu) are the one intentional exception: they build on the
-  `spring-boot-starter-notifications` core SPI.
+  `spring-boot-starter-redis`.
+
+- **One exception:** provider integration starters (Twilio, Resend, OneSignal, Novu — planned in the
+  roadmap) will depend on `spring-boot-starter-notifications` (orange) because they implement its
+  `NotificationSender` SPI.
 
 ### Starters at a glance
 
@@ -133,17 +184,13 @@ The consumer-first philosophy is enforced with conditions on every bean:
 
 ### Configuration properties
 
-Every starter exposes a `@ConfigurationProperties`-annotated class bound to its prefix. All
-properties have documented defaults; a starter works out of the box with a minimal amount of
-required configuration (typically just an endpoint/credentials for the ones that talk to a
-remote service).
+Every starter exposes a `@ConfigurationProperties`-annotated class bound to its prefix. All properties have documented defaults; a starter works out of the box with a minimal amount of required configuration (typically just an endpoint/credentials for the ones that talk to a remote service).
 
 ---
 
 ## 4. Observability
 
-Starters that talk to a remote service ship observability that is **conditional**, so it adds
-zero cost when the actuator or Micrometer is absent:
+Starters that talk to a remote service ship observability that is **conditional**, so it adds zero cost when the actuator or Micrometer is absent:
 
 - **Health indicators** implement `org.springframework.boot.health.contributor.HealthIndicator`
   (Spring Boot 4.0's relocated health API) and are gated with `@ConditionalOnClass` on the
@@ -152,8 +199,7 @@ zero cost when the actuator or Micrometer is absent:
   (`@ConditionalOnBean(MeterRegistry.class)`), typically via an AOP aspect that times backend
   operations and tags them by operation name and success/failure outcome.
 
-The `HealthDetails` builder in `spring-boot-starter-common` gives every health indicator a
-consistent, null-safe, insertion-ordered detail map.
+The `HealthDetails` builder in `spring-boot-starter-common` gives every health indicator a consistent, null-safe, insertion-ordered detail map.
 
 ---
 
@@ -177,8 +223,7 @@ The root `build.gradle.kts` configures every sub-project through a `subprojects 
   warnings surfaced during the build. Example apps are demonstration code and have their
   Javadoc task disabled.
 
-Examples apply `org.springframework.boot` + `io.spring.dependency-management` in their own
-plugins block (which auto-imports the Boot BOM) and are excluded from publishing.
+Examples apply `org.springframework.boot` + `io.spring.dependency-management` in their own plugins block (which auto-imports the Boot BOM) and are excluded from publishing.
 
 ---
 

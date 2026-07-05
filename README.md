@@ -180,7 +180,6 @@ is present. See [DEVELOPER.md](DEVELOPER.md) for the full workflow.
 |---|---|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Module graph, auto-configuration mechanics, build & test architecture |
 | [DEVELOPER.md](DEVELOPER.md) | Local setup, Gradle commands, adding a starter, Spring Boot 4.0 notes |
-| [ROADMAP.md](ROADMAP.md) | Community-demanded starters (analysis) + detailed implementation plans |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Coding standards, commit conventions, PR process |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | Per-starter `README.md` | Configuration reference, DDL, and usage examples |
