@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: multitenancy-example
+  multitenancy:
+    require-tenant: false
+    tenant-header-name: X-Tenant-Id
+    resolver-type: HEADER

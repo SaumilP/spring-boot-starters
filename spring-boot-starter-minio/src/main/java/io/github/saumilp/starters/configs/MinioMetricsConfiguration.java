@@ -1,0 +1,163 @@
+package io.github.saumilp.starters.configs;
+
+import java.util.concurrent.TimeUnit;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import io.github.saumilp.starters.properties.MinioConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.health.autoconfigure.contributor.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Configuration;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.minio.MinioClient;
+import jakarta.annotation.PostConstruct;
+
+/**
+ * AOP aspect that records Micrometer {@link Timer} metrics around {@link MinioClient}
+ * operations (list, get, bucket-exists, create-bucket, put), tagged by operation name and
+ * success/failure outcome.
+ *
+ * @since 1.0.0
+ */
+@Aspect
+@Configuration
+@ConditionalOnClass({ MinioClient.class, ManagementContextAutoConfiguration.class })
+@ConditionalOnEnabledHealthIndicator("minio")
+@AutoConfigureBefore(HealthContributorAutoConfiguration.class)
+@AutoConfigureAfter(MinioAutoConfiguration.class)
+public class MinioMetricsConfiguration {
+
+    private final MeterRegistry meterRegistry;
+    private final MinioConfigurationProperties props;
+
+    private Timer listObjectsOkTimer;
+    private Timer listObjectsKoTimer;
+    private Timer getObjectOkTimer;
+    private Timer getObjectKoTimer;
+    private Timer bucketExistsOkTimer;
+    private Timer bucketExistsKoTimer;
+    private Timer createBucketOkTimer;
+    private Timer createBucketKoTimer;
+    private Timer putObjectOkTimer;
+    private Timer putObjectKoTimer;
+
+    /**
+     * Creates the metrics aspect.
+     *
+     * @param meterRegistry the Micrometer registry to register timers with; must not be {@code null}
+     * @param props         the MinIO configuration properties; must not be {@code null}
+     */
+    @Autowired
+    public MinioMetricsConfiguration(MeterRegistry meterRegistry, MinioConfigurationProperties props) {
+        this.meterRegistry = meterRegistry;
+        this.props = props;
+    }
+
+    /** Initialises the per-operation success and failure timers after construction. */
+    @PostConstruct
+    public void initializeTimers() {
+        this.listObjectsOkTimer = aNewTimer("listObjects", "ok");
+        this.listObjectsKoTimer = aNewTimer("listObjects", "ko");
+        this.getObjectOkTimer = aNewTimer("getObject", "ok");
+        this.getObjectKoTimer = aNewTimer("getObject", "ko");
+        this.bucketExistsOkTimer = aNewTimer("bucketExists", "ok");
+        this.bucketExistsKoTimer = aNewTimer("bucketExists", "ko");
+        this.createBucketOkTimer = aNewTimer("createBucket", "ok");
+        this.createBucketKoTimer = aNewTimer("createBucket", "ko");
+        this.putObjectOkTimer = aNewTimer("putObject", "ok");
+        this.putObjectKoTimer = aNewTimer("putObject", "ko");
+    }
+
+    /**
+     * Times calls to {@link MinioClient#listObjects}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
+    @ConditionalOnBean(MinioClient.class)
+    @Around("execution(* io.minio.MinioClient.listObjects(..))")
+    public Object listObjectsMeter(ProceedingJoinPoint pjp) throws Throwable {
+        return wrapExecution(listObjectsOkTimer, listObjectsKoTimer, pjp);
+    }
+
+    /**
+     * Times calls to {@link MinioClient#getObject}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
+    @ConditionalOnBean(MinioClient.class)
+    @Around("execution(* io.minio.MinioClient.getObject(..))")
+    public Object getObjectMeter(ProceedingJoinPoint pjp) throws Throwable {
+        return wrapExecution(getObjectOkTimer, getObjectKoTimer, pjp);
+    }
+
+    /**
+     * Times calls to {@link MinioClient#bucketExists}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
+    @ConditionalOnBean(MinioClient.class)
+    @Around("execution(* io.minio.MinioClient.bucketExists(..))")
+    public Object bucketExistsMeter(ProceedingJoinPoint pjp) throws Throwable {
+        return wrapExecution(bucketExistsOkTimer, bucketExistsKoTimer, pjp);
+    }
+
+    /**
+     * Times calls to {@link MinioClient#makeBucket}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
+    @ConditionalOnBean(MinioClient.class)
+    @Around("execution(* io.minio.MinioClient.createBucket(..))")
+    public Object createBucketMeter(ProceedingJoinPoint pjp) throws Throwable {
+        return wrapExecution(createBucketOkTimer, createBucketKoTimer, pjp);
+    }
+
+    /**
+     * Times calls to {@link MinioClient#putObject}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
+    @ConditionalOnBean(MinioClient.class)
+    @Around("execution(* io.minio.MinioClient.putObject(..))")
+    public Object putObjectMeter(ProceedingJoinPoint pjp) throws Throwable {
+        return wrapExecution(putObjectOkTimer, putObjectKoTimer, pjp);
+    }
+
+    private Timer aNewTimer(String operation, String status) {
+        return Timer.builder(props.getMetricName())
+                .tag("operation", operation)
+                .tag("status", status)
+                .tag("bucket", props.getBucket())
+                .register(meterRegistry);
+    }
+
+    private Object wrapExecution(Timer okTimer, Timer koTimer, ProceedingJoinPoint pjp) throws Throwable {
+        long start = System.currentTimeMillis();
+        try {
+            var proceed = pjp.proceed();
+            okTimer.record(System.currentTimeMillis() - start, TimeUnit.MILLISECONDS);
+            return proceed;
+        } catch (Exception ex) {
+            koTimer.record(System.currentTimeMillis() - start, TimeUnit.MILLISECONDS);
+            throw ex;
+        }
+    }
+}

@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: feature-flags-example
+  feature-flags:
+    file-path: classpath:feature-flags.yml
