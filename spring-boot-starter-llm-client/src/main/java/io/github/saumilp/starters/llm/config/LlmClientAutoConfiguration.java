@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 SaumilP. Apache License 2.0.
+ * Copyright (c) 2010-2026 SaumilP. Apache License 2.0.
  */
 package io.github.saumilp.starters.llm.config;
 
