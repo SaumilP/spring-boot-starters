@@ -84,7 +84,9 @@ class MinioStorageServiceIntegrationTest {
     void should_uploadAndRetrieveObject_when_fileUploaded() throws Exception {
         String content = "Hello, MinIO!";
         InputStream input = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-        Path objectPath = Path.of(TEST_BUCKET, TEST_OBJECT);
+        // The Path is the object key within the default bucket; it must not include the
+        // bucket name (the implementation already targets clientProps.getBucket()).
+        Path objectPath = Path.of(TEST_OBJECT);
 
         storageService.upload(objectPath, input, "text/plain");
 
@@ -96,7 +98,7 @@ class MinioStorageServiceIntegrationTest {
     void should_removeObject_when_deleteRequested() throws Exception {
         String content = "to-be-deleted";
         InputStream input = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-        Path objectPath = Path.of(TEST_BUCKET, TEST_OBJECT);
+        Path objectPath = Path.of(TEST_OBJECT);
         storageService.upload(objectPath, input, "text/plain");
 
         boolean removed = storageService.removeObject(TEST_BUCKET, TEST_OBJECT);
