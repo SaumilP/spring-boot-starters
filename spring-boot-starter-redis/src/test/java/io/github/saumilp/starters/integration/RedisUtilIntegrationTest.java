@@ -6,7 +6,6 @@ package io.github.saumilp.starters.integration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import io.github.saumilp.starters.utils.RedisLockUtil;
 import io.github.saumilp.starters.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;

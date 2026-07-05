@@ -48,6 +48,10 @@ import java.net.URI;
 @ConditionalOnProperty(prefix = "spring.aws.s3", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class S3AutoConfiguration {
 
+    /** Creates the S3 auto-configuration. */
+    public S3AutoConfiguration() {
+    }
+
     /**
      * Registers the AWS SDK v2 {@link S3Client}.
      *

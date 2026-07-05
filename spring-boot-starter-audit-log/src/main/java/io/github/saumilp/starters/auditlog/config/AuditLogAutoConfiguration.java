@@ -48,6 +48,10 @@ import java.util.List;
 @EnableConfigurationProperties(AuditLogProperties.class)
 public class AuditLogAutoConfiguration {
 
+    /** Creates the audit-log auto-configuration. */
+    public AuditLogAutoConfiguration() {
+    }
+
     /**
      * Registers the Spring Security-aware {@link ActorResolver} when Spring Security is present.
      *

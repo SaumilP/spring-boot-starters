@@ -20,6 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class SpringSecurityActorResolver implements ActorResolver {
 
+    /** Creates a new Spring Security actor resolver. */
+    public SpringSecurityActorResolver() {
+    }
+
     /**
      * {@inheritDoc}
      *

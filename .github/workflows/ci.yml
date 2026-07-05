@@ -86,7 +86,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run integration tests
-        run: ./gradlew :spring-boot-starter-redis:test :spring-boot-starter-minio:test
+        run: ./gradlew :spring-boot-starter-redis:integrationTest :spring-boot-starter-minio:integrationTest
 
       - name: Upload integration test reports
         if: always()

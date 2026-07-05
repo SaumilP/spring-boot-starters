@@ -47,6 +47,8 @@ public @interface RateLimit {
     /**
      * Maximum number of requests allowed within the time window defined by {@link #per()}.
      * Must be a positive integer. Defaults to {@code 60}.
+     *
+     * @return the maximum request count per window
      */
     int requests() default 60;
 
@@ -54,6 +56,8 @@ public @interface RateLimit {
      * The time unit defining the duration of the sliding window used to count requests.
      * Combined with {@link #requests()}, expresses the rate as {@code requests} per {@code per}.
      * Defaults to {@link TimeUnit#MINUTES}.
+     *
+     * @return the time unit of the sliding window
      */
     TimeUnit per() default TimeUnit.MINUTES;
 
@@ -61,6 +65,8 @@ public @interface RateLimit {
      * Optional SpEL expression evaluated at request time to produce a custom rate-limit key.
      * When empty (the default), the key is derived automatically from the principal and method.
      * Example: {@code "#request.remoteAddr + ':search'"}
+     *
+     * @return the SpEL key expression, or an empty string to derive the key automatically
      */
     String key() default "";
 
@@ -69,6 +75,8 @@ public @interface RateLimit {
      * When specified, the {@code requests} and {@code per} attributes of this annotation are
      * ignored in favour of the named configuration. This allows centralised limit management
      * in {@code application.yml} without scattering numeric values across annotations.
+     *
+     * @return the named-limit key, or an empty string to use the inline {@code requests}/{@code per}
      */
     String name() default "";
 }

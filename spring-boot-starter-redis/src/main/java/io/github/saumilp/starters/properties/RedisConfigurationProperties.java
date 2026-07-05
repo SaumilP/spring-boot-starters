@@ -26,6 +26,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(RedisConfigurationProperties.PREFIX)
 public class RedisConfigurationProperties {
 
+    /** Creates an instance with default values. */
+    public RedisConfigurationProperties() {
+    }
+
     /** The configuration property prefix for all Redis starter properties. */
     public static final String PREFIX = "spring.redis";
 

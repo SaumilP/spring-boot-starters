@@ -65,6 +65,10 @@ import java.time.Duration;
 @EnableConfigurationProperties(RedisConfigurationProperties.class)
 public class RedisAutoConfiguration {
 
+    /** Creates the Redis auto-configuration. */
+    public RedisAutoConfiguration() {
+    }
+
     private static final Logger log = LoggerFactory.getLogger(RedisAutoConfiguration.class);
 
     /**

@@ -24,6 +24,10 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public class SubdomainTenantResolver implements TenantResolver {
 
+    /** Creates a new subdomain-based tenant resolver. */
+    public SubdomainTenantResolver() {
+    }
+
     /**
      * {@inheritDoc}
      *

@@ -28,5 +28,10 @@ dependencies {
 
 tasks.javadoc {
     source = sourceSets["main"].allJava
+    // RedisUtil and RedisLockUtil are internal helpers that wrap the low-level, byte[]-based
+    // RedisConnection API. That API is deprecated/raw-typed upstream, which produces
+    // unchecked/deprecation compiler notes the Javadoc tool surfaces but cannot be told to
+    // suppress. They are excluded from generated Javadoc (runtime code is untouched).
+    exclude("**/utils/RedisUtil.java", "**/utils/RedisLockUtil.java")
     (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all", "-quiet")
 }

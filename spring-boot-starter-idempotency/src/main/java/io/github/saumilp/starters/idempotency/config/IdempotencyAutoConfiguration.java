@@ -47,6 +47,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @EnableConfigurationProperties(IdempotencyProperties.class)
 public class IdempotencyAutoConfiguration {
 
+    /** Creates the idempotency auto-configuration. */
+    public IdempotencyAutoConfiguration() {
+    }
+
     /**
      * Registers the Redis-backed {@link IdempotencyStore}.
      *

@@ -25,6 +25,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.audit-log")
 public class AuditLogProperties {
 
+    /** Creates an instance with default values. */
+    public AuditLogProperties() {
+    }
+
     /** Whether audit logging is globally enabled. Defaults to {@code true}. */
     private boolean enabled = true;
 

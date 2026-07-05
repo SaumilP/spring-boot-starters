@@ -36,6 +36,7 @@ public class SchemaMultiTenantConnectionProvider implements MultiTenantConnectio
 
     private static final Logger log = LoggerFactory.getLogger(SchemaMultiTenantConnectionProvider.class);
 
+    /** The application's primary data source used to obtain per-tenant JDBC connections. */
     private final DataSource dataSource;
 
     /**

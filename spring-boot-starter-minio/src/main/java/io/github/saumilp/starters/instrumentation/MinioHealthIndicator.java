@@ -11,6 +11,12 @@ import org.springframework.stereotype.Component;
 import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 
+/**
+ * Spring Boot Actuator {@link HealthIndicator} that reports MinIO connectivity by checking
+ * whether the configured bucket exists.
+ *
+ * @since 1.0.0
+ */
 @ConditionalOnClass(ManagementContextAutoConfiguration.class)
 @Component
 public class MinioHealthIndicator implements HealthIndicator {
@@ -18,6 +24,12 @@ public class MinioHealthIndicator implements HealthIndicator {
     private final MinioClient minioClient;
     private final MinioConfigurationProperties props;
 
+    /**
+     * Creates the health indicator.
+     *
+     * @param minioClient the MinIO client used to probe connectivity; must not be {@code null}
+     * @param props       the MinIO configuration properties; must not be {@code null}
+     */
     @Autowired
     public MinioHealthIndicator(MinioClient minioClient, MinioConfigurationProperties props) {
         this.minioClient = minioClient;

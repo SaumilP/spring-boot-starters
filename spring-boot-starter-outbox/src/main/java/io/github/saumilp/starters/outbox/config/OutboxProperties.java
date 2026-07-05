@@ -25,6 +25,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.outbox")
 public class OutboxProperties {
 
+    /** Creates an instance with default values. */
+    public OutboxProperties() {
+    }
+
     /** Whether the outbox relay is enabled. Defaults to {@code true}. */
     private boolean enabled = true;
 
@@ -67,7 +71,11 @@ public class OutboxProperties {
      */
     public boolean isEnabled() { return enabled; }
 
-    /** @param enabled {@code false} to disable the relay and publisher entirely */
+    /**
+     * Sets whether the outbox relay is enabled.
+     *
+     * @param enabled {@code false} to disable the relay and publisher entirely
+     */
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     /**
@@ -77,7 +85,11 @@ public class OutboxProperties {
      */
     public long getRelayIntervalMs() { return relayIntervalMs; }
 
-    /** @param relayIntervalMs the polling interval in ms; must be positive */
+    /**
+     * Sets the fixed delay between relay polling cycles.
+     *
+     * @param relayIntervalMs the polling interval in ms; must be positive
+     */
     public void setRelayIntervalMs(long relayIntervalMs) { this.relayIntervalMs = relayIntervalMs; }
 
     /**
@@ -87,7 +99,11 @@ public class OutboxProperties {
      */
     public int getMaxRetries() { return maxRetries; }
 
-    /** @param maxRetries the maximum retry count; must be positive */
+    /**
+     * Sets the maximum number of relay attempts.
+     *
+     * @param maxRetries the maximum retry count; must be positive
+     */
     public void setMaxRetries(int maxRetries) { this.maxRetries = maxRetries; }
 
     /**
@@ -97,7 +113,11 @@ public class OutboxProperties {
      */
     public String getBroker() { return broker; }
 
-    /** @param broker the broker type; {@code "kafka"} or {@code "rabbitmq"} */
+    /**
+     * Sets the broker type.
+     *
+     * @param broker the broker type; {@code "kafka"} or {@code "rabbitmq"}
+     */
     public void setBroker(String broker) { this.broker = broker; }
 
     /**
@@ -107,7 +127,11 @@ public class OutboxProperties {
      */
     public String getKafkaTopicPrefix() { return kafkaTopicPrefix; }
 
-    /** @param kafkaTopicPrefix the topic prefix; must not be {@code null} */
+    /**
+     * Sets the Kafka topic name prefix.
+     *
+     * @param kafkaTopicPrefix the topic prefix; must not be {@code null}
+     */
     public void setKafkaTopicPrefix(String kafkaTopicPrefix) { this.kafkaTopicPrefix = kafkaTopicPrefix; }
 
     /**
@@ -117,6 +141,10 @@ public class OutboxProperties {
      */
     public String getRabbitExchange() { return rabbitExchange; }
 
-    /** @param rabbitExchange the exchange name; must not be {@code null} or blank */
+    /**
+     * Sets the RabbitMQ exchange name.
+     *
+     * @param rabbitExchange the exchange name; must not be {@code null} or blank
+     */
     public void setRabbitExchange(String rabbitExchange) { this.rabbitExchange = rabbitExchange; }
 }

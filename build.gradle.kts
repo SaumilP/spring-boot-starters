@@ -117,10 +117,33 @@ subprojects {
     }
 
     tasks.named<Test>("test") {
-        useJUnitPlatform()
+        useJUnitPlatform {
+            excludeTags("integration")
+        }
+    }
+
+    tasks.register<Test>("integrationTest") {
+        description = "Runs tests tagged 'integration' (require Docker/Testcontainers)."
+        group = "verification"
+        val unitTest = tasks.named<Test>("test").get()
+        testClassesDirs = unitTest.testClassesDirs
+        classpath = unitTest.classpath
+        useJUnitPlatform {
+            includeTags("integration")
+        }
+        filter {
+            isFailOnNoMatchingTests = false
+        }
+        shouldRunAfter(unitTest)
     }
 
     tasks.withType<JavaCompile>().configureEach {
         options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked"))
+    }
+
+    if (isExample) {
+        // Example apps are demonstration code and are not published to Maven Central,
+        // so no Javadoc is generated for them (and they do not need Javadoc coverage).
+        tasks.withType<Javadoc>().configureEach { isEnabled = false }
     }
 }

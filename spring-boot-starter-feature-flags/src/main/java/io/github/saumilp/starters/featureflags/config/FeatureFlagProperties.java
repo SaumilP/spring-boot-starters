@@ -23,6 +23,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.feature-flags")
 public class FeatureFlagProperties {
 
+    /** Creates an instance with default values. */
+    public FeatureFlagProperties() {
+    }
+
     /** Whether feature flag evaluation is globally enabled. Defaults to {@code true}. */
     private boolean enabled = true;
 

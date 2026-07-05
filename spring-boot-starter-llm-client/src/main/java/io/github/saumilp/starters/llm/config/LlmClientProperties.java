@@ -27,6 +27,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.llm")
 public class LlmClientProperties {
 
+    /** Creates an instance with default values. */
+    public LlmClientProperties() {
+    }
+
     /** Whether the LLM client is enabled. Defaults to {@code true}. */
     private boolean enabled = true;
 
@@ -74,7 +78,11 @@ public class LlmClientProperties {
      * @return {@code true} if enabled
      */
     public boolean isEnabled() { return enabled; }
-    /** @param enabled {@code false} to disable the auto-configured client */
+    /**
+     * Sets whether the LLM client is enabled.
+     *
+     * @param enabled {@code false} to disable the auto-configured client
+     */
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     /**
@@ -82,7 +90,11 @@ public class LlmClientProperties {
      * @return the base URL; never {@code null}
      */
     public String getBaseUrl() { return baseUrl; }
-    /** @param baseUrl the endpoint base URL; must not be {@code null} */
+    /**
+     * Sets the base URL of the LLM endpoint.
+     *
+     * @param baseUrl the endpoint base URL; must not be {@code null}
+     */
     public void setBaseUrl(String baseUrl) { this.baseUrl = baseUrl; }
 
     /**
@@ -90,7 +102,11 @@ public class LlmClientProperties {
      * @return the API key; may be empty
      */
     public String getApiKey() { return apiKey; }
-    /** @param apiKey the API key; must not be {@code null} */
+    /**
+     * Sets the API key used for authentication.
+     *
+     * @param apiKey the API key; must not be {@code null}
+     */
     public void setApiKey(String apiKey) { this.apiKey = apiKey; }
 
     /**
@@ -98,7 +114,11 @@ public class LlmClientProperties {
      * @return the model name; never {@code null}
      */
     public String getDefaultModel() { return defaultModel; }
-    /** @param defaultModel the model name; must not be blank */
+    /**
+     * Sets the default model identifier.
+     *
+     * @param defaultModel the model name; must not be blank
+     */
     public void setDefaultModel(String defaultModel) { this.defaultModel = defaultModel; }
 
     /**
@@ -106,7 +126,11 @@ public class LlmClientProperties {
      * @return the retry count; always non-negative
      */
     public int getMaxRetries() { return maxRetries; }
-    /** @param maxRetries the retry count; must be non-negative */
+    /**
+     * Sets the maximum number of retry attempts.
+     *
+     * @param maxRetries the retry count; must be non-negative
+     */
     public void setMaxRetries(int maxRetries) { this.maxRetries = maxRetries; }
 
     /**
@@ -114,7 +138,11 @@ public class LlmClientProperties {
      * @return the timeout; always positive
      */
     public int getConnectTimeoutSeconds() { return connectTimeoutSeconds; }
-    /** @param connectTimeoutSeconds the connection timeout; must be positive */
+    /**
+     * Sets the HTTP connection timeout in seconds.
+     *
+     * @param connectTimeoutSeconds the connection timeout; must be positive
+     */
     public void setConnectTimeoutSeconds(int connectTimeoutSeconds) {
         this.connectTimeoutSeconds = connectTimeoutSeconds;
     }
@@ -124,7 +152,11 @@ public class LlmClientProperties {
      * @return the timeout; always positive
      */
     public int getReadTimeoutSeconds() { return readTimeoutSeconds; }
-    /** @param readTimeoutSeconds the read timeout; must be positive */
+    /**
+     * Sets the HTTP read timeout in seconds.
+     *
+     * @param readTimeoutSeconds the read timeout; must be positive
+     */
     public void setReadTimeoutSeconds(int readTimeoutSeconds) {
         this.readTimeoutSeconds = readTimeoutSeconds;
     }

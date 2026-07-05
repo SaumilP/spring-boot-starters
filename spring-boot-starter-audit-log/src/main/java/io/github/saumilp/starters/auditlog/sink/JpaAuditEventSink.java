@@ -95,6 +95,10 @@ public class JpaAuditEventSink implements AuditEventSink {
     @Table(name = "audit_events")
     public static class AuditEventEntity {
 
+        /** Creates an empty entity instance (required by JPA). */
+        public AuditEventEntity() {
+        }
+
         /** Surrogate primary key. */
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -133,47 +137,79 @@ public class JpaAuditEventSink implements AuditEventSink {
         @Column(name = "duration_ms", nullable = false)
         private long durationMs;
 
-        /** @return the surrogate primary key */
+        /** {@return the surrogate primary key} */
         public Long getId() { return id; }
 
-        /** @return the action identifier */
+        /** {@return the action identifier} */
         public String getAction() { return action; }
-        /** @param action the action identifier */
+        /**
+         * Sets the action identifier.
+         *
+         * @param action the action identifier
+         */
         public void setAction(String action) { this.action = action; }
 
-        /** @return the resource type */
+        /** {@return the resource type} */
         public String getResource() { return resource; }
-        /** @param resource the resource type */
+        /**
+         * Sets the resource type.
+         *
+         * @param resource the resource type
+         */
         public void setResource(String resource) { this.resource = resource; }
 
-        /** @return the resource instance identifier */
+        /** {@return the resource instance identifier} */
         public String getResourceId() { return resourceId; }
-        /** @param resourceId the resource instance identifier */
+        /**
+         * Sets the resource instance identifier.
+         *
+         * @param resourceId the resource instance identifier
+         */
         public void setResourceId(String resourceId) { this.resourceId = resourceId; }
 
-        /** @return the actor identity */
+        /** {@return the actor identity} */
         public String getActor() { return actor; }
-        /** @param actor the actor identity */
+        /**
+         * Sets the actor identity.
+         *
+         * @param actor the actor identity
+         */
         public void setActor(String actor) { this.actor = actor; }
 
-        /** @return the operation outcome */
+        /** {@return the operation outcome} */
         public AuditOutcome getOutcome() { return outcome; }
-        /** @param outcome the operation outcome */
+        /**
+         * Sets the operation outcome.
+         *
+         * @param outcome the operation outcome
+         */
         public void setOutcome(AuditOutcome outcome) { this.outcome = outcome; }
 
-        /** @return the error message, or {@code null} on success */
+        /** {@return the error message, or {@code null} on success} */
         public String getErrorMessage() { return errorMessage; }
-        /** @param errorMessage the exception message */
+        /**
+         * Sets the error message.
+         *
+         * @param errorMessage the exception message
+         */
         public void setErrorMessage(String errorMessage) { this.errorMessage = errorMessage; }
 
-        /** @return the UTC instant the event occurred */
+        /** {@return the UTC instant the event occurred} */
         public Instant getOccurredAt() { return occurredAt; }
-        /** @param occurredAt the event instant */
+        /**
+         * Sets the event instant.
+         *
+         * @param occurredAt the event instant
+         */
         public void setOccurredAt(Instant occurredAt) { this.occurredAt = occurredAt; }
 
-        /** @return the method duration in milliseconds */
+        /** {@return the method duration in milliseconds} */
         public long getDurationMs() { return durationMs; }
-        /** @param durationMs the method duration */
+        /**
+         * Sets the method duration.
+         *
+         * @param durationMs the method duration
+         */
         public void setDurationMs(long durationMs) { this.durationMs = durationMs; }
     }
 

@@ -30,6 +30,10 @@ import java.util.List;
 @ConfigurationProperties(prefix = "spring.idempotency")
 public class IdempotencyProperties {
 
+    /** Creates an instance with default values. */
+    public IdempotencyProperties() {
+    }
+
     /** Whether the idempotency filter is enabled. Defaults to {@code true}. */
     private boolean enabled = true;
 

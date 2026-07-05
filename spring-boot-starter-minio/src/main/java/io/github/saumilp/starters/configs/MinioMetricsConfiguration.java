@@ -20,6 +20,13 @@ import io.micrometer.core.instrument.Timer;
 import io.minio.MinioClient;
 import jakarta.annotation.PostConstruct;
 
+/**
+ * AOP aspect that records Micrometer {@link Timer} metrics around {@link MinioClient}
+ * operations (list, get, bucket-exists, create-bucket, put), tagged by operation name and
+ * success/failure outcome.
+ *
+ * @since 1.0.0
+ */
 @Aspect
 @Configuration
 @ConditionalOnClass({ MinioClient.class, ManagementContextAutoConfiguration.class })
@@ -42,12 +49,19 @@ public class MinioMetricsConfiguration {
     private Timer putObjectOkTimer;
     private Timer putObjectKoTimer;
 
+    /**
+     * Creates the metrics aspect.
+     *
+     * @param meterRegistry the Micrometer registry to register timers with; must not be {@code null}
+     * @param props         the MinIO configuration properties; must not be {@code null}
+     */
     @Autowired
     public MinioMetricsConfiguration(MeterRegistry meterRegistry, MinioConfigurationProperties props) {
         this.meterRegistry = meterRegistry;
         this.props = props;
     }
 
+    /** Initialises the per-operation success and failure timers after construction. */
     @PostConstruct
     public void initializeTimers() {
         this.listObjectsOkTimer = aNewTimer("listObjects", "ok");
@@ -62,30 +76,65 @@ public class MinioMetricsConfiguration {
         this.putObjectKoTimer = aNewTimer("putObject", "ko");
     }
 
+    /**
+     * Times calls to {@link MinioClient#listObjects}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
     @ConditionalOnBean(MinioClient.class)
     @Around("execution(* io.minio.MinioClient.listObjects(..))")
     public Object listObjectsMeter(ProceedingJoinPoint pjp) throws Throwable {
         return wrapExecution(listObjectsOkTimer, listObjectsKoTimer, pjp);
     }
 
+    /**
+     * Times calls to {@link MinioClient#getObject}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
     @ConditionalOnBean(MinioClient.class)
     @Around("execution(* io.minio.MinioClient.getObject(..))")
     public Object getObjectMeter(ProceedingJoinPoint pjp) throws Throwable {
         return wrapExecution(getObjectOkTimer, getObjectKoTimer, pjp);
     }
 
+    /**
+     * Times calls to {@link MinioClient#bucketExists}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
     @ConditionalOnBean(MinioClient.class)
     @Around("execution(* io.minio.MinioClient.bucketExists(..))")
     public Object bucketExistsMeter(ProceedingJoinPoint pjp) throws Throwable {
         return wrapExecution(bucketExistsOkTimer, bucketExistsKoTimer, pjp);
     }
 
+    /**
+     * Times calls to {@link MinioClient#makeBucket}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
     @ConditionalOnBean(MinioClient.class)
     @Around("execution(* io.minio.MinioClient.createBucket(..))")
     public Object createBucketMeter(ProceedingJoinPoint pjp) throws Throwable {
         return wrapExecution(createBucketOkTimer, createBucketKoTimer, pjp);
     }
 
+    /**
+     * Times calls to {@link MinioClient#putObject}.
+     *
+     * @param pjp the intercepted join point
+     * @return the value returned by the intercepted method
+     * @throws Throwable if the intercepted method throws
+     */
     @ConditionalOnBean(MinioClient.class)
     @Around("execution(* io.minio.MinioClient.putObject(..))")
     public Object putObjectMeter(ProceedingJoinPoint pjp) throws Throwable {

@@ -26,6 +26,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.multitenancy")
 public class MultitenancyProperties {
 
+    /** Creates an instance with default values. */
+    public MultitenancyProperties() {
+    }
+
     /** Whether multitenancy support is enabled. Defaults to {@code true}. */
     private boolean enabled = true;
 
@@ -72,7 +76,11 @@ public class MultitenancyProperties {
      */
     public boolean isEnabled() { return enabled; }
 
-    /** @param enabled {@code false} to disable all multitenancy support */
+    /**
+     * Sets whether multitenancy is enabled.
+     *
+     * @param enabled {@code false} to disable all multitenancy support
+     */
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     /**
@@ -81,7 +89,11 @@ public class MultitenancyProperties {
      */
     public String getStrategy() { return strategy; }
 
-    /** @param strategy the isolation strategy */
+    /**
+     * Sets the isolation strategy.
+     *
+     * @param strategy the isolation strategy
+     */
     public void setStrategy(String strategy) { this.strategy = strategy; }
 
     /**
@@ -90,7 +102,11 @@ public class MultitenancyProperties {
      */
     public String getTenantHeaderName() { return tenantHeaderName; }
 
-    /** @param tenantHeaderName the header name; must not be {@code null} */
+    /**
+     * Sets the tenant HTTP header name.
+     *
+     * @param tenantHeaderName the header name; must not be {@code null}
+     */
     public void setTenantHeaderName(String tenantHeaderName) { this.tenantHeaderName = tenantHeaderName; }
 
     /**
@@ -99,7 +115,11 @@ public class MultitenancyProperties {
      */
     public boolean isRequireTenant() { return requireTenant; }
 
-    /** @param requireTenant {@code true} to reject requests with no tenant */
+    /**
+     * Sets whether requests without a tenant are rejected.
+     *
+     * @param requireTenant {@code true} to reject requests with no tenant
+     */
     public void setRequireTenant(boolean requireTenant) { this.requireTenant = requireTenant; }
 
     /**
@@ -108,7 +128,11 @@ public class MultitenancyProperties {
      */
     public String getDefaultTenant() { return defaultTenant; }
 
-    /** @param defaultTenant the fallback tenant identifier */
+    /**
+     * Sets the fallback tenant identifier.
+     *
+     * @param defaultTenant the fallback tenant identifier
+     */
     public void setDefaultTenant(String defaultTenant) { this.defaultTenant = defaultTenant; }
 
     /**
@@ -117,7 +141,11 @@ public class MultitenancyProperties {
      */
     public ResolverType getResolverType() { return resolverType; }
 
-    /** @param resolverType the resolver type to register */
+    /**
+     * Sets the resolver type to auto-register.
+     *
+     * @param resolverType the resolver type to register
+     */
     public void setResolverType(ResolverType resolverType) { this.resolverType = resolverType; }
 
     /**

@@ -44,11 +44,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties(OutboxProperties.class)
 public class OutboxAutoConfiguration {
 
+    /** Creates the outbox auto-configuration. */
+    public OutboxAutoConfiguration() {
+    }
+
     /**
      * Registers the Kafka broker adapter when Kafka is on the classpath and the broker
      * is configured as {@code "kafka"}.
      *
-     * @param props the outbox configuration properties; must not be {@code null}
+     * @param kafkaTemplate the Kafka template used to publish events; must not be {@code null}
+     * @param props         the outbox configuration properties; must not be {@code null}
      * @return a configured {@link KafkaBrokerAdapter}; never {@code null}
      */
     @Bean

@@ -3,9 +3,7 @@
  */
 package io.github.saumilp.starters.integration;
 
-import io.minio.MinioClient;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import io.github.saumilp.starters.services.StorageService;
@@ -50,7 +48,7 @@ class MinioStorageServiceIntegrationTest {
     @Container
     @SuppressWarnings("resource")
     static final MinIOContainer MINIO = new MinIOContainer(
-            DockerImageName.parse("minio/minio:RELEASE.2024-01-01T00-00-00Z"))
+            DockerImageName.parse("minio/minio:RELEASE.2025-07-23T15-54-02Z"))
             .withUserName(MINIO_USER)
             .withPassword(MINIO_PASSWORD);
 

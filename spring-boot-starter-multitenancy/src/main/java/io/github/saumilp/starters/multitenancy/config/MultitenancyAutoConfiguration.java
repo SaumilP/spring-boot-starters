@@ -47,6 +47,10 @@ import javax.sql.DataSource;
 @EnableConfigurationProperties(MultitenancyProperties.class)
 public class MultitenancyAutoConfiguration {
 
+    /** Creates the multitenancy auto-configuration. */
+    public MultitenancyAutoConfiguration() {
+    }
+
     /**
      * Registers the {@link HeaderTenantResolver} when
      * {@code spring.multitenancy.resolver-type=HEADER} (the default).

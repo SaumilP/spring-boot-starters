@@ -22,6 +22,10 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggingAuditEventSink implements AuditEventSink {
 
+    /** Creates a new logging sink. */
+    public LoggingAuditEventSink() {
+    }
+
     private static final Logger log = LoggerFactory.getLogger("AUDIT");
 
     /**

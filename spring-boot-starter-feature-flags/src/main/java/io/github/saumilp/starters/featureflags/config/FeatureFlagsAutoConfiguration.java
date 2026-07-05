@@ -41,6 +41,10 @@ import org.springframework.core.io.ResourceLoader;
 @EnableConfigurationProperties(FeatureFlagProperties.class)
 public class FeatureFlagsAutoConfiguration {
 
+    /** Creates the feature-flags auto-configuration. */
+    public FeatureFlagsAutoConfiguration() {
+    }
+
     private static final Logger log = LoggerFactory.getLogger(FeatureFlagsAutoConfiguration.class);
 
     /**

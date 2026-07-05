@@ -60,11 +60,22 @@ import io.minio.messages.RestoreRequest;
 import io.minio.messages.Retention;
 import io.minio.messages.SseAlgorithm;
 
+/**
+ * {@link StorageService} implementation backed by the MinIO Java client.
+ *
+ * @since 1.0.0
+ */
 public class MinioStorageServiceImpl implements StorageService {
 
     private final MinioClient minioClient;
     private final MinioConfigurationProperties clientProps;
 
+    /**
+     * Creates the storage service.
+     *
+     * @param minioClient the MinIO client; must not be {@code null}
+     * @param clientProps the MinIO configuration properties; must not be {@code null}
+     */
     public MinioStorageServiceImpl(MinioClient minioClient, MinioConfigurationProperties clientProps) {
         this.minioClient = minioClient;
         this.clientProps = clientProps;

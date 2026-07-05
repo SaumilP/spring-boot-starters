@@ -1,6 +1,6 @@
 # outbox-example
 
-Demonstrates the `spring-boot-starter-outbox` starter with the Transactional Outbox pattern.  
+Demonstrates the `spring-boot-starter-outbox` starter with the Transactional Outbox pattern.
 Orders are saved to PostgreSQL and an `ORDER_PLACED` event is atomically written to the outbox table. A scheduled relay then publishes events to Kafka.
 
 ## Prerequisites

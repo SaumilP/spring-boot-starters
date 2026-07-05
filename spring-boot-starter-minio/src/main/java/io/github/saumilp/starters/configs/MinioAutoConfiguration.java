@@ -18,22 +18,53 @@ import org.springframework.util.StringUtils;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
+/**
+ * Auto-configuration for the MinIO storage starter.
+ *
+ * <p>Registers the {@link MinioConfigurationProperties}, a {@link MinioClient} (with optional
+ * proxy, region, and bucket bootstrapping), and the {@link StorageService} implementation.
+ *
+ * @since 1.0.0
+ */
 @Configuration
 @ConditionalOnClass(MinioClient.class)
 public class MinioAutoConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(MinioAutoConfiguration.class);
 
+    /** Creates the MinIO auto-configuration. */
+    public MinioAutoConfiguration() {
+    }
+
+    /**
+     * Provides the MinIO configuration properties bean.
+     *
+     * @return the configuration properties; never {@code null}
+     */
     @Bean
     public MinioConfigurationProperties minioConfigurationProperties() {
         return new MinioConfigurationProperties();
     }
 
+    /**
+     * Provides the {@link StorageService} backed by the configured MinIO client.
+     *
+     * @param minioClient the MinIO client; must not be {@code null}
+     * @param configProps the MinIO configuration properties; must not be {@code null}
+     * @return the storage service; never {@code null}
+     */
     @Bean
     public StorageService minioService(MinioClient minioClient, MinioConfigurationProperties configProps) {
         return new MinioStorageServiceImpl(minioClient, configProps);
     }
 
+    /**
+     * Builds the {@link MinioClient}, applying proxy and region settings and optionally
+     * verifying or creating the configured bucket on startup.
+     *
+     * @return a configured MinIO client; never {@code null}
+     * @throws Exception if the client cannot be built or the bucket check/creation fails
+     */
     @Bean
     public MinioClient minioClient() throws Exception {
         MinioConfigurationProperties clientProps = minioConfigurationProperties();

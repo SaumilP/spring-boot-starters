@@ -28,6 +28,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class InMemorySlidingWindowRateLimiter implements RateLimiter {
 
+    /** Creates a new in-memory sliding-window rate limiter. */
+    public InMemorySlidingWindowRateLimiter() {
+    }
+
     private final Map<String, Deque<Long>> buckets = new ConcurrentHashMap<>();
 
     /**

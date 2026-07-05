@@ -43,6 +43,10 @@ import java.util.Map;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class RateLimitExceptionHandler {
 
+    /** Creates the rate-limit exception handler. */
+    public RateLimitExceptionHandler() {
+    }
+
     /**
      * Handles {@link RateLimitExceededException} and returns an HTTP {@code 429} response.
      *

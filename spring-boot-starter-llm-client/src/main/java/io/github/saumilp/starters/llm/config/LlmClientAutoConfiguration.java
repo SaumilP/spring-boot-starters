@@ -42,6 +42,10 @@ import java.time.Duration;
 @EnableConfigurationProperties(LlmClientProperties.class)
 public class LlmClientAutoConfiguration {
 
+    /** Creates the LLM client auto-configuration. */
+    public LlmClientAutoConfiguration() {
+    }
+
     /**
      * Creates a {@link RestClient} scoped to the LLM endpoint with configured timeouts.
      *

@@ -13,6 +13,10 @@ package io.github.saumilp.starters.auditlog.actor;
  */
 public class FallbackActorResolver implements ActorResolver {
 
+    /** Creates a new fallback resolver. */
+    public FallbackActorResolver() {
+    }
+
     /**
      * {@inheritDoc}
      *

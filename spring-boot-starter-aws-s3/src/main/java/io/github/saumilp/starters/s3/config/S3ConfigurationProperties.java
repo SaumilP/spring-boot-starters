@@ -37,6 +37,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.aws.s3")
 public class S3ConfigurationProperties {
 
+    /** Creates an instance with default values. */
+    public S3ConfigurationProperties() {
+    }
+
     /** Whether the S3 starter is enabled. Defaults to {@code true}. */
     private boolean enabled = true;
 
@@ -94,7 +98,11 @@ public class S3ConfigurationProperties {
      */
     public boolean isEnabled() { return enabled; }
 
-    /** @param enabled {@code false} to disable auto-configuration entirely */
+    /**
+     * Sets whether the starter is enabled.
+     *
+     * @param enabled {@code false} to disable auto-configuration entirely
+     */
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     /**
@@ -103,7 +111,11 @@ public class S3ConfigurationProperties {
      */
     public String getRegion() { return region; }
 
-    /** @param region the AWS region code; must not be {@code null} */
+    /**
+     * Sets the AWS region.
+     *
+     * @param region the AWS region code; must not be {@code null}
+     */
     public void setRegion(String region) { this.region = region; }
 
     /**
@@ -112,7 +124,11 @@ public class S3ConfigurationProperties {
      */
     public String getAccessKeyId() { return accessKeyId; }
 
-    /** @param accessKeyId the AWS access key ID */
+    /**
+     * Sets the static AWS access key ID.
+     *
+     * @param accessKeyId the AWS access key ID
+     */
     public void setAccessKeyId(String accessKeyId) { this.accessKeyId = accessKeyId; }
 
     /**
@@ -121,7 +137,11 @@ public class S3ConfigurationProperties {
      */
     public String getSecretAccessKey() { return secretAccessKey; }
 
-    /** @param secretAccessKey the AWS secret access key */
+    /**
+     * Sets the static AWS secret access key.
+     *
+     * @param secretAccessKey the AWS secret access key
+     */
     public void setSecretAccessKey(String secretAccessKey) { this.secretAccessKey = secretAccessKey; }
 
     /**
@@ -130,7 +150,11 @@ public class S3ConfigurationProperties {
      */
     public String getEndpointOverride() { return endpointOverride; }
 
-    /** @param endpointOverride the custom endpoint URL; empty string to use AWS default */
+    /**
+     * Sets the custom endpoint override URL.
+     *
+     * @param endpointOverride the custom endpoint URL; empty string to use AWS default
+     */
     public void setEndpointOverride(String endpointOverride) { this.endpointOverride = endpointOverride; }
 
     /**
@@ -139,7 +163,11 @@ public class S3ConfigurationProperties {
      */
     public boolean isPathStyleAccess() { return pathStyleAccess; }
 
-    /** @param pathStyleAccess {@code true} for LocalStack / MinIO compatibility */
+    /**
+     * Sets whether path-style S3 access is used.
+     *
+     * @param pathStyleAccess {@code true} for LocalStack / MinIO compatibility
+     */
     public void setPathStyleAccess(boolean pathStyleAccess) { this.pathStyleAccess = pathStyleAccess; }
 
     /**
@@ -148,7 +176,11 @@ public class S3ConfigurationProperties {
      */
     public String getDefaultBucket() { return defaultBucket; }
 
-    /** @param defaultBucket the default bucket name */
+    /**
+     * Sets the default bucket name.
+     *
+     * @param defaultBucket the default bucket name
+     */
     public void setDefaultBucket(String defaultBucket) { this.defaultBucket = defaultBucket; }
 
     /**
@@ -157,7 +189,11 @@ public class S3ConfigurationProperties {
      */
     public long getPresignedUrlExpiryMinutes() { return presignedUrlExpiryMinutes; }
 
-    /** @param presignedUrlExpiryMinutes the expiry in minutes; must be positive */
+    /**
+     * Sets the pre-signed URL expiry in minutes.
+     *
+     * @param presignedUrlExpiryMinutes the expiry in minutes; must be positive
+     */
     public void setPresignedUrlExpiryMinutes(long presignedUrlExpiryMinutes) {
         this.presignedUrlExpiryMinutes = presignedUrlExpiryMinutes;
     }

@@ -27,6 +27,10 @@ import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
  */
 public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver<String> {
 
+    /** Creates a new tenant identifier resolver. */
+    public TenantIdentifierResolver() {
+    }
+
     /**
      * Returns the current tenant identifier from {@link TenantContext}, or {@code "public"}
      * when no tenant has been set on the executing thread.

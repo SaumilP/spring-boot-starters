@@ -27,6 +27,10 @@ import org.springframework.cache.interceptor.KeyGenerator;
  */
 public class RedisKeyGenerator implements CachingConfigurer {
 
+    /** Creates a new key generator configurer. */
+    public RedisKeyGenerator() {
+    }
+
     /**
      * Returns a {@link KeyGenerator} that builds cache keys from the target class name,
      * method name, and all parameter values.

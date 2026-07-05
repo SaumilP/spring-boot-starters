@@ -47,6 +47,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 @EnableConfigurationProperties(RateLimitProperties.class)
 public class RateLimitAutoConfiguration {
 
+    /** Creates the rate-limiting auto-configuration. */
+    public RateLimitAutoConfiguration() {
+    }
+
     /**
      * Registers a Redis-backed {@link RateLimiter} when {@link RedisTemplate} is present on
      * the classpath and no other {@link RateLimiter} bean has been defined.

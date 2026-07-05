@@ -34,6 +34,10 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "spring.rate-limit")
 public class RateLimitProperties {
 
+    /** Creates an instance with default values. */
+    public RateLimitProperties() {
+    }
+
     /** Whether rate limiting is enabled. Defaults to {@code true}. */
     private boolean enabled = true;
 
@@ -131,6 +135,10 @@ public class RateLimitProperties {
      * @since 1.0.0
      */
     public static class NamedLimit {
+
+        /** Creates an instance with default values. */
+        public NamedLimit() {
+        }
 
         /** Maximum number of requests allowed per window. */
         private int requests = 60;

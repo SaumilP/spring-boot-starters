@@ -3,6 +3,7 @@
  */
 package io.github.saumilp.starters.common.health;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -61,9 +62,15 @@ public final class HealthDetails {
     /**
      * Returns the accumulated detail map.
      *
-     * @return an unmodifiable snapshot of the detail entries collected so far; never {@code null}
+     * <p>Insertion order is preserved. A defensive copy is taken so the returned map is an
+     * unmodifiable, order-preserving snapshot that is unaffected by further mutations of this
+     * builder. ({@link Map#copyOf(Map)} is deliberately avoided here because it makes no
+     * iteration-order guarantee.)
+     *
+     * @return an unmodifiable, insertion-ordered snapshot of the detail entries collected so
+     *         far; never {@code null}
      */
     public Map<String, Object> build() {
-        return Map.copyOf(details);
+        return Collections.unmodifiableMap(new LinkedHashMap<>(details));
     }
 }
