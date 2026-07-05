@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: security-jwt-example
+  security-jwt:
+    # Point this at your identity provider's JWKS endpoint. The demo value lets the app boot;
+    # tokens are only fetched/validated when a request presents a bearer token.
+    jwk-set-uri: ${JWK_SET_URI:https://issuer.example.com/.well-known/jwks.json}
+    public-paths:
+      - /public/**
+      - /actuator/health
+    cors:
+      allowed-origins:
+        - http://localhost:3000
+      allow-credentials: true
+
+server:
+  port: 8080

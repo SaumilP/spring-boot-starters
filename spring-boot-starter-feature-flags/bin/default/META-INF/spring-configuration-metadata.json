@@ -1,0 +1,33 @@
+{
+  "groups": [
+    {
+      "name": "spring.feature-flags",
+      "type": "io.github.saumilp.starters.featureflags.config.FeatureFlagProperties",
+      "sourceType": "io.github.saumilp.starters.featureflags.config.FeatureFlagProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.feature-flags.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether feature flag evaluation is globally enabled. Defaults to {@code true}.",
+      "sourceType": "io.github.saumilp.starters.featureflags.config.FeatureFlagProperties"
+    },
+    {
+      "name": "spring.feature-flags.file-path",
+      "type": "java.lang.String",
+      "description": "Resource path to the YAML file containing flag definitions. Supports Spring resource prefixes ({@code classpath:}, {@code file:}). Defaults to {@code \"classpath:feature-flags.yml\"}.",
+      "sourceType": "io.github.saumilp.starters.featureflags.config.FeatureFlagProperties"
+    },
+    {
+      "name": "spring.feature-flags.provider",
+      "type": "java.lang.String",
+      "description": "The feature provider implementation to use. Supported values: <ul> <li>{@code \"file\"} — the built-in {@link io.github.saumilp.starters.featureflags.provider.FileBasedFeatureProvider} (default)<\/li> <li>{@code \"unleash\"} — use the Unleash SDK; requires adding the Unleash client dependency and registering a custom {@link dev.openfeature.sdk.FeatureProvider} bean<\/li> <\/ul>",
+      "sourceType": "io.github.saumilp.starters.featureflags.config.FeatureFlagProperties"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

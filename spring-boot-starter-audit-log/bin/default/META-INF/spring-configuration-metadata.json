@@ -1,0 +1,45 @@
+{
+  "groups": [
+    {
+      "name": "spring.audit-log",
+      "type": "io.github.saumilp.starters.auditlog.config.AuditLogProperties",
+      "sourceType": "io.github.saumilp.starters.auditlog.config.AuditLogProperties"
+    },
+    {
+      "name": "spring.audit-log.jpa-sink",
+      "type": "io.github.saumilp.starters.auditlog.config.AuditLogProperties$SinkConfig",
+      "sourceType": "io.github.saumilp.starters.auditlog.config.AuditLogProperties",
+      "sourceMethod": "public io.github.saumilp.starters.auditlog.config.AuditLogProperties.SinkConfig getJpaSink() "
+    },
+    {
+      "name": "spring.audit-log.logging-sink",
+      "type": "io.github.saumilp.starters.auditlog.config.AuditLogProperties$SinkConfig",
+      "sourceType": "io.github.saumilp.starters.auditlog.config.AuditLogProperties",
+      "sourceMethod": "public io.github.saumilp.starters.auditlog.config.AuditLogProperties.SinkConfig getLoggingSink() "
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.audit-log.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether audit logging is globally enabled. Defaults to {@code true}.",
+      "sourceType": "io.github.saumilp.starters.auditlog.config.AuditLogProperties"
+    },
+    {
+      "name": "spring.audit-log.jpa-sink.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether this sink is active.",
+      "sourceType": "io.github.saumilp.starters.auditlog.config.AuditLogProperties$SinkConfig"
+    },
+    {
+      "name": "spring.audit-log.logging-sink.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether this sink is active.",
+      "sourceType": "io.github.saumilp.starters.auditlog.config.AuditLogProperties$SinkConfig"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

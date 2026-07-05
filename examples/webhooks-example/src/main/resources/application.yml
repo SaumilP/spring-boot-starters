@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: webhooks-example
+  webhooks:
+    signature-header: X-Webhook-Signature
+    retry:
+      max-attempts: 3
+      backoff: 200ms
+
+server:
+  port: 8080

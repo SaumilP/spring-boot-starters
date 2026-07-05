@@ -6,7 +6,7 @@ package io.github.saumilp.starters.examples.outbox;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * @author SaumilP (email2saumil2024@gmail.com)
+ * @author SaumilP
  */
 public interface OrderRepository extends JpaRepository<Order, String> {
 }

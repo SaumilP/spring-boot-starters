@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Places an order and publishes an ORDER_PLACED outbox event in the same transaction.
  *
- * @author SaumilP (email2saumil2024@gmail.com)
+ * @author SaumilP
  */
 @Service
 public class OrderService {

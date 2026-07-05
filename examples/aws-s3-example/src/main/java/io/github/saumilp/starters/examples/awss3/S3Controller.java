@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Demonstrates S3 upload, download, presigned URL, and delete via {@link S3StorageService}.
  *
- * @author SaumilP (email2saumil2024@gmail.com)
+ * @author SaumilP
  */
 @RestController
 @RequestMapping("/s3")

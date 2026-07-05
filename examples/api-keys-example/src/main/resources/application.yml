@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: api-keys-example
+  api-keys:
+    header-name: X-Api-Key
+    prefix: sk
+    protected-paths:
+      - /internal/**
+
+server:
+  port: 8080

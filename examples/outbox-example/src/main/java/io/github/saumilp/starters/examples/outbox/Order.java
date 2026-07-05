@@ -6,7 +6,7 @@ package io.github.saumilp.starters.examples.outbox;
 import jakarta.persistence.*;
 
 /**
- * @author SaumilP (email2saumil2024@gmail.com)
+ * @author SaumilP
  */
 @Entity
 @Table(name = "orders")
