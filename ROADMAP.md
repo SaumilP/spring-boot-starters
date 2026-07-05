@@ -39,9 +39,20 @@ management**, and **PII protection (masking + field encryption)**.
 | 5 | `spring-boot-starter-data-privacy` | PII masking in logs + JPA field-level encryption | High | Medium | High (no first-class Spring solution) | **P1** |
 | 6 | `spring-boot-starter-scheduler-lock` | Prevent duplicate `@Scheduled` runs across instances | Medium | Medium | High (ShedLock is 3rd-party; no Boot starter here) | **P1** |
 | 7 | `spring-boot-starter-security-jwt` | JWT resource server + secure headers + CORS defaults | High | High | Low–Medium (Spring Security covers most; opinionated bundle still hand-rolled) | **P2** |
-| 8 | `spring-boot-starter-notifications` | Pluggable email / SMS / push channels behind one API | Medium | Medium | High | **P2** |
+| 8 | `spring-boot-starter-notifications` | Core SPI — pluggable email / SMS / push channels behind one API | Medium | Medium | High | **P2** |
 | 9 | `spring-boot-starter-webhooks` | Outbound webhook delivery with signing + retry (pairs with `outbox`) | Medium | Medium | High | **P2** |
 | 10 | `spring-boot-starter-api-keys` | Issue / validate API keys for service-to-service auth | Medium | Medium | High | **P3** |
+| 11 | `spring-boot-starter-twilio` | SMS / WhatsApp / voice via Twilio | High | Medium | Medium | **Requested** |
+| 12 | `spring-boot-starter-resend` | Transactional email via Resend | Medium | Medium | High | **Requested** |
+| 13 | `spring-boot-starter-onesignal` | Push / email / SMS / in-app via OneSignal | Medium | Medium | High | **Requested** |
+| 14 | `spring-boot-starter-novu` | Multi-channel notification workflow orchestration via Novu | Medium | Medium | High | **Requested** |
+| 15 | `spring-boot-starter-supabase` | Supabase BaaS — Auth, Storage, and PostgREST data access | Medium | Medium | High | **Requested** |
+
+> Items 11–15 were explicitly requested. The four messaging providers (Twilio, Resend,
+> OneSignal, Novu) are designed as **provider modules behind the `notifications` core SPI**
+> (item 8) — the same "common interface, swappable provider" pattern the repo already uses for
+> `StorageService` across `minio`/`aws-s3`. They also work standalone. Supabase is a separate
+> BaaS integration. Detailed plans are in [§6](#6-third-party-integration-starters-requested).
 
 **Honesty note on overlaps:** Spring provides raw building blocks for several of these
 (`ProblemDetail`, Micrometer Tracing, Spring Cloud Vault, Spring Security OAuth2 Resource
@@ -226,8 +237,13 @@ consistent with the repo. **Effort:** ~M.
 - **`security-jwt`** — `@ConditionalOnClass` OAuth2 Resource Server; opinionated `SecurityFilterChain`
   with JWT validation, secure headers (HSTS, X-Content-Type-Options, frame options), and CORS from
   `spring.security-jwt.*`. Mostly convention over Spring Security. **Effort:** ~M.
-- **`notifications`** — `NotificationSender` API with pluggable `email` (JavaMailSender), `sms`
-  (Twilio/SNS), `push` channels; template resolution; async send. **Effort:** ~L.
+- **`notifications`** — the **core SPI**: a `NotificationSender` interface, a `NotificationMessage`
+  model (recipient, channel, subject/body, template ref, metadata), a `Channel` enum
+  (`EMAIL`/`SMS`/`PUSH`/`IN_APP`/`WHATSAPP`), template resolution, and async dispatch. Ships a
+  no-op/logging default; concrete transports come from the provider starters in [§6](#6-third-party-integration-starters-requested)
+  (Twilio, Resend, OneSignal, Novu), each of which registers a `NotificationSender` for its
+  channels. A `CompositeNotificationSender` routes a message to the provider that supports its
+  channel (mirrors `CompositeAuditEventSink` in `audit-log`). **Effort:** ~M for the core.
 - **`webhooks`** — outbound webhook registry + signed (HMAC) delivery with retry/backoff and a
   dead-letter; pairs naturally with `outbox`. **Effort:** ~L.
 - **`api-keys`** — issue/rotate/validate hashed API keys, a filter for `X-Api-Key`, and per-key rate
@@ -235,7 +251,117 @@ consistent with the repo. **Effort:** ~M.
 
 ---
 
-## 6. Cross-cutting work & sequencing
+## 6. Third-party integration starters (requested)
+
+These wrap external SaaS APIs with the repo's standard auto-configuration, typed configuration
+properties, and a thin client, so consumers get a ready-to-inject bean instead of hand-wiring an
+SDK. All four messaging providers implement the `notifications` core `NotificationSender` SPI (§2 item 8,
+§5) for the channels they support, and also expose their native client for provider-specific features.
+
+**Shared conventions for all five:**
+- Config under `spring.<provider>.*` with an `enabled` flag; credentials never hard-coded (resolve
+  via `spring-boot-starter-secrets` when present).
+- `@ConditionalOnClass` on the SDK type (or, where no stable Java SDK exists, a `RestClient`-based
+  client so there is no extra runtime dependency) + `@ConditionalOnProperty` on `enabled` +
+  `@ConditionalOnMissingBean` on the client bean.
+- A health indicator (where the provider exposes a ping/account endpoint) and Micrometer timers on
+  send operations, both conditional.
+- Unit tests with a stubbed HTTP server (WireMock) — these SaaS APIs have no local container — and,
+  where the provider is self-hostable (Novu, Supabase), an **optional** `@Tag("integration")` +
+  `@EnabledIfDockerAvailable` Testcontainers test.
+
+### 6.1 `spring-boot-starter-twilio` — SMS / WhatsApp / voice
+
+| Property (`spring.twilio.*`) | Purpose |
+|---|---|
+| `enabled` | Master switch |
+| `account-sid`, `auth-token` | Twilio credentials |
+| `from-number` | Default sender (E.164) |
+| `messaging-service-sid` | Optional Messaging Service for sender pools |
+| `channel` | `sms` (default) or `whatsapp` |
+
+**Beans** (`twilio.config.TwilioAutoConfiguration`): initialize the SDK
+(`Twilio.init(sid, token)`), expose a `TwilioClient`, and register a `TwilioNotificationSender`
+implementing the `SMS`/`WHATSAPP` channels of the notifications SPI. **Deps:**
+`com.twilio.sdk:twilio`. **Reference:** a community `twilio-spring-boot` already exists, confirming
+demand. **Effort:** ~S–M.
+
+### 6.2 `spring-boot-starter-resend` — transactional email
+
+| Property (`spring.resend.*`) | Purpose |
+|---|---|
+| `enabled` | Master switch |
+| `api-key` | Resend API key |
+| `from` | Default `From` address |
+| `reply-to` | Optional default reply-to |
+
+**Beans** (`resend.config.ResendAutoConfiguration`): a `ResendEmailSender` (using the official
+`com.resend:resend-java` SDK, or `RestClient` against `https://api.resend.com/emails`) that
+implements the `EMAIL` channel and supports HTML/text bodies, attachments, and tags. **Effort:** ~S.
+
+### 6.3 `spring-boot-starter-onesignal` — push / email / SMS / in-app
+
+> **Naming note:** interpreted as **OneSignal** (customer-engagement platform with a REST API for
+> push/email/SMS/in-app). "OpenSignal" is a different company (mobile-network analytics) with no
+> notification-sending API — confirm if that was actually intended.
+
+| Property (`spring.onesignal.*`) | Purpose |
+|---|---|
+| `enabled` | Master switch |
+| `app-id` | OneSignal application ID |
+| `rest-api-key` | Server REST API key |
+| `default-channel` | `push` (default), `email`, or `sms` |
+
+**Beans** (`onesignal.config.OneSignalAutoConfiguration`): a `RestClient`-based `OneSignalClient`
+(no mature Java SDK — call `https://api.onesignal.com/notifications`) and a
+`OneSignalNotificationSender` supporting the `PUSH`/`EMAIL`/`SMS`/`IN_APP` channels, addressing by
+external user ID, segment, or player ID. **Effort:** ~M.
+
+### 6.4 `spring-boot-starter-novu` — notification workflow orchestration
+
+Novu is a notification *orchestration* layer: you trigger a named **workflow** for a **subscriber**
+with a payload, and Novu fans out across the channels/providers configured in Novu.
+
+| Property (`spring.novu.*`) | Purpose |
+|---|---|
+| `enabled` | Master switch |
+| `api-key` | Novu API key |
+| `base-url` | `https://api.novu.co` (override for self-hosted) |
+| `default-workflow` | Optional default workflow/template ID |
+
+**Beans** (`novu.config.NovuAutoConfiguration`): a `NovuClient` wrapping
+`trigger(workflowId, subscriber, payload)` plus subscriber upsert (using `co.novu:novu-java` if
+suitably maintained for Boot 4, else `RestClient`), and a `NovuNotificationSender` that maps a
+generic message to a workflow trigger. Because Novu is **self-hostable via Docker**, an optional
+Testcontainers integration test can exercise a real instance. **Effort:** ~M.
+
+### 6.5 `spring-boot-starter-supabase` — Auth, Storage, PostgREST
+
+The largest of the five — Supabase is a BaaS spanning several REST subsystems. Scope v1 to three
+thin, independently-conditional clients over its REST APIs (no official Java SDK to depend on):
+
+| Property (`spring.supabase.*`) | Purpose |
+|---|---|
+| `enabled` | Master switch |
+| `url` | Project URL (e.g. `https://xyz.supabase.co`) |
+| `anon-key` | Public anon key (client-side scope) |
+| `service-role-key` | Server key for privileged operations |
+
+**Beans** (`supabase.config.SupabaseAutoConfiguration`):
+- `SupabaseAuthClient` — sign-up / sign-in / verify / admin user ops against **GoTrue**
+  (`/auth/v1`).
+- `SupabaseStorageClient` — bucket/object upload/download/sign against **Storage** (`/storage/v1`);
+  optionally adapts to the existing `StorageService` interface for parity with `minio`/`aws-s3`.
+- `SupabaseRestClient` — a thin **PostgREST** (`/rest/v1`) query/insert/update/delete helper.
+
+Each sub-client is `@ConditionalOnProperty`-gated so consumers enable only what they use. Supabase
+provides a local Docker stack (`supabase start`), enabling optional Testcontainers integration
+tests; WireMock covers unit tests in CI. **Effort:** ~L (candidate for later splitting into
+`supabase-auth` / `supabase-storage` / `supabase-data`).
+
+---
+
+## 7. Cross-cutting work & sequencing
 
 **Shared enablers first.** Land `observability` early — `problem-details`, `resilient-client`,
 `audit-log`, and `data-privacy` all benefit from a correlation ID in MDC. Consider promoting a small
@@ -255,7 +381,13 @@ without a hard dependency.
 
 **Suggested delivery order:**
 `observability` → `problem-details` → `resilient-client` → `data-privacy` → `scheduler-lock` →
-`secrets` → (`security-jwt`, `webhooks`, `notifications`, `api-keys`).
+`secrets` → (`security-jwt`, `webhooks`, `api-keys`).
+
+**Requested integration track (can proceed in parallel with the P0/P1 track):** ship the
+`notifications` core SPI first, then the provider starters that plug into it —
+`resend` → `twilio` → `onesignal` → `novu` — followed by the standalone `supabase` BaaS starter.
+Each provider is independently shippable and low-risk (thin SaaS wrapper), so they make good
+"good first module" contributions.
 
 **CI/versioning.** Each new module starts at `1.0.0`, is added to both CI jobs' scopes where it has
 integration tests, and follows the existing BOM-platform build. No changes to the release workflow
@@ -263,7 +395,7 @@ are required.
 
 ---
 
-## 7. Sources
+## 8. Sources
 
 Community signal was drawn from the following public pages:
 
@@ -287,3 +419,10 @@ Community signal was drawn from the following public pages:
 - [GDPR — Encryption, Masking and Logging using Spring Boot AOP — Medium](https://har-d.medium.com/easy-implementation-of-gdpr-with-aspect-oriented-programming-27e96f47767d)
 - [multi-tenant-springboot-starter — GitHub](https://github.com/rahul-s-bhatt/multi-tenant-springboot-starter)
 - [ultimate-backend (multi-tenant SaaS, CQRS) — GitHub](https://github.com/juicycleff/ultimate-backend)
+- [twilio-spring-boot (Spring Boot + Twilio Java SDK) — GitHub](https://github.com/ciscoo/twilio-spring-boot)
+- [Spring Boot Twilio integration — TutorialsPoint](https://www.tutorialspoint.com/spring_boot/spring_boot_twilio.htm)
+- [REST API overview — OneSignal](https://documentation.onesignal.com/reference/rest-api-overview)
+- [SMS, Push & Messaging API — OneSignal](https://onesignal.com/message-api)
+- [Get Started with Resend and Supabase — Resend](https://resend.com/docs/knowledge-base/getting-started-with-resend-and-supabase)
+- [Resend | Works With Supabase — Supabase](https://supabase.com/partners/integrations/resend)
+- [Send emails with Supabase — Resend](https://resend.com/supabase)
